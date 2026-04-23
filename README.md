@@ -1,4 +1,14 @@
-<!-- <p align="center">
+> ⚠️ **INTERNAL FORK — NOT FOR PUBLIC USE**
+> 
+> This repository is a fork maintained by [Automation Now, LLC](https://automationnow.org) for internal training platform operations.
+> 
+> **Please do not open issues or pull requests here.** For the official OpenMAIC project, visit the upstream repository: [THU-MAIC/OpenMAIC](https://github.com/THU-MAIC/OpenMAIC)
+> 
+> For inquiries about Automation Now's CALE Certified training programs or OpenMAIC platform licensing, contact us at automationnow.org.
+>
+> ---
+>
+> <!-- <p align="center">
   <img src="assets/logo-horizontal.png" alt="OpenMAIC" width="420"/>
 </p> -->
 
