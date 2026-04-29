@@ -315,7 +315,7 @@ export async function generateSceneContent(
     return generateWidgetContent(
       outline,
       aiCall,
-      (languageDirective || 'zh-CN') as 'zh-CN' | 'en-US',
+      (languageDirective || 'en-US') as 'zh-CN' | 'en-US',
     );
   }
 
