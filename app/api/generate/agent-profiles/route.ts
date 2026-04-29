@@ -111,6 +111,7 @@ Requirements:
 - Each agent needs: name, role, persona (2-3 sentences describing personality and teaching/learning style)
 - Language directive for this course: ${languageDirective}
   Agent names and personas must follow this language directive.
+- IMPORTANT: If any available voice has a feminine name (e.g. "Kim", "Kim Voice") or is assigned to the teacher role, the teacher agent MUST be given a female name and female persona. Female teacher names to use: Kim, Jordan, Taylor, Morgan, Alex, Dana, Riley, Casey, Avery, Quinn.
 - Each agent must be assigned one avatar from this list: ${JSON.stringify(avatarDescriptions && avatarDescriptions.length > 0 ? avatarDescriptions.map((a) => ({ path: a.path, description: a.desc })) : availableAvatars)}
   - Pick an avatar that visually matches the agent's personality and role
   - Try to use different avatars for each agent
