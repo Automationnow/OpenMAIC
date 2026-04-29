@@ -905,6 +905,29 @@ export const TTS_PROVIDERS: Record<BuiltInTTSProviderId, TTSProviderConfig> = {
     speedRange: { min: 0.7, max: 1.2, default: 1.0 },
   },
 
+  'mistral-tts': {
+    id: 'mistral-tts',
+    name: 'Mistral Voxtral TTS',
+    requiresApiKey: true,
+    defaultBaseUrl: 'https://api.mistral.ai/v1',
+    icon: '/logos/mistral.svg',
+    models: [
+      { id: 'mistral-tts', name: 'Mistral TTS' },
+    ],
+    defaultModelId: 'mistral-tts',
+    voices: [
+      {
+        id: '59961ad8-07bd-487c-8585-4dde741078fa',
+        name: 'Derrick Voice 3',
+        language: 'en',
+        gender: 'male',
+        description: 'Automation Now LLC — Derrick Mitchell cloned voice',
+      },
+    ],
+    supportedFormats: ['mp3'],
+    speedRange: { min: 0.5, max: 2.0, default: 1.0 },
+  },
+
   'browser-native-tts': {
     id: 'browser-native-tts',
     name: '浏览器原生 (Web Speech API)',
@@ -1133,6 +1156,7 @@ export const DEFAULT_TTS_VOICES: Record<BuiltInTTSProviderId, string> = {
   'doubao-tts': 'zh_female_vv_uranus_bigtts',
   'elevenlabs-tts': 'EXAVITQu4vr4xnSDxMaL',
   'minimax-tts': 'female-yujie',
+  'mistral-tts': '59961ad8-07bd-487c-8585-4dde741078fa',
   'browser-native-tts': 'default',
 };
 
@@ -1144,6 +1168,7 @@ export const DEFAULT_TTS_MODELS: Record<BuiltInTTSProviderId, string> = {
   'doubao-tts': '',
   'elevenlabs-tts': 'eleven_multilingual_v2',
   'minimax-tts': 'speech-2.8-hd',
+  'mistral-tts': 'mistral-tts',
   'browser-native-tts': '',
 };
 

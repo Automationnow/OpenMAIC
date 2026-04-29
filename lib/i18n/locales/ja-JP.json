@@ -568,6 +568,7 @@
     "providerQwenTTS": "Qwen TTS（Alibaba Cloud百錬）",
     "providerDoubaoTTS": "Doubao TTS 2.0（火山エンジン）",
     "providerElevenLabsTTS": "ElevenLabs TTS",
+    "providerMistralTTS": "Mistral Voxtral TTS",
     "providerMiniMaxTTS": "MiniMax TTS",
     "providerBrowserNativeTTS": "ブラウザネイティブTTS",
     "providerOpenAIWhisper": "OpenAI ASR (gpt-4o-mini-transcribe)",

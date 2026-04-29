@@ -567,6 +567,7 @@
     "providerQwenTTS": "Qwen TTS (سحابة علي بابا بايليان)",
     "providerDoubaoTTS": "Doubao TTS 2.0 (فولكينجين)",
     "providerElevenLabsTTS": "ElevenLabs TTS",
+    "providerMistralTTS": "Mistral Voxtral TTS",
     "providerMiniMaxTTS": "MiniMax TTS",
     "providerBrowserNativeTTS": "تحويل النص إلى كلام المدمج في المتصفح",
     "providerOpenAIWhisper": "OpenAI ASR (gpt-4o-mini-transcribe)",

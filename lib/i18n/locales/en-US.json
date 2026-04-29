@@ -568,6 +568,7 @@
     "providerQwenTTS": "Qwen TTS (Alibaba Cloud Bailian)",
     "providerDoubaoTTS": "Doubao TTS 2.0 (Volcengine)",
     "providerElevenLabsTTS": "ElevenLabs TTS",
+    "providerMistralTTS": "Mistral Voxtral TTS",
     "providerMiniMaxTTS": "MiniMax TTS",
     "providerBrowserNativeTTS": "Browser Native TTS",
     "providerOpenAIWhisper": "OpenAI ASR (gpt-4o-mini-transcribe)",
