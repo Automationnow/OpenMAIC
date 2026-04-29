@@ -143,12 +143,12 @@ function getTTSProviderName(providerId: TTSProviderId, t: (key: string) => strin
     'qwen-tts': t('settings.providerQwenTTS'),
     'doubao-tts': t('settings.providerDoubaoTTS'),
     'elevenlabs-tts': t('settings.providerElevenLabsTTS'),
+    'mistral-tts': t('settings.providerMistralTTS'),
     'minimax-tts': t('settings.providerMiniMaxTTS'),
     'browser-native-tts': t('settings.providerBrowserNativeTTS'),
   };
   return names[providerId] || providerId;
 }
-
 function getASRProviderName(providerId: ASRProviderId, t: (key: string) => string): string {
   if (isCustomASRProvider(providerId)) {
     const cfg = useSettingsStore.getState().asrProvidersConfig[providerId];
