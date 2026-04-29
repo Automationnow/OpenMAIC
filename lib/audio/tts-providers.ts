@@ -618,9 +618,19 @@ async function generateMistralTTS(
     throw new Error(`Mistral TTS API error: ${error.message || response.statusText}`);
   }
 
-  const arrayBuffer = await response.arrayBuffer();
+  // Mistral TTS returns JSON with base64-encoded audio_data field
+  // (unlike OpenAI which returns a raw binary audio stream)
+  const json = await response.json();
+  if (!json.audio_data) {
+    throw new Error('Mistral TTS API error: No audio_data in response');
+  }
+  const binaryString = atob(json.audio_data);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
   return {
-    audio: new Uint8Array(arrayBuffer),
+    audio: bytes,
     format: 'mp3',
   };
 }
