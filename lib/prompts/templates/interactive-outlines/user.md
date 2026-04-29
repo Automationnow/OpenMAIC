@@ -14,6 +14,8 @@ Generate an Ultra Mode course outline based on the following requirements.
 
 **Required language**: {{language}}
 
+**IMPORTANT: Default to English if language is not explicitly specified. All scene titles, descriptions, keyPoints, and content MUST be in English unless the user explicitly requests otherwise.**
+
 ---
 
 ## Reference Materials
@@ -106,7 +108,7 @@ Choose widgets based on the content:
   "widgetType": "game",
   "widgetOutline": {
     "gameType": "action",
-    "challenge": "控制推力使飞船安全着陆",
+    "challenge": "Control thrust to land the spacecraft safely",
     "playerControls": ["thrust_slider"]
   }
 }

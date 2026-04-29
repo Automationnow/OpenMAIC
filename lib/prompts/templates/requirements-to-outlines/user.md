@@ -12,10 +12,13 @@ Please generate scene outlines based on the following course requirements.
 
 ## Language Context
 
+**IMPORTANT: This platform is configured for English-language instruction. Unless the user explicitly requests a different language, ALL course content, slide text, narration, quiz questions, and scene titles MUST be generated in English.**
+
 Infer the course language directive by applying the decision rules from the system prompt. Key reminders:
 - Requirement language = teaching language (unless overridden by explicit request or learner context)
 - Foreign language learning → teach in user's native language, not the target language
 - PDF language does NOT override teaching language — translate/explain document content instead
+- **Default language when ambiguous: English**
 
 ---
 
