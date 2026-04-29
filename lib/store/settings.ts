@@ -24,7 +24,7 @@ import { validateProvider, validateModel } from '@/lib/store/settings-validation
 const log = createLogger('Settings');
 
 /** Available playback speed tiers */
-export const PLAYBACK_SPEEDS = [1, 1.25, 1.5, 2] as const;
+export const PLAYBACK_SPEEDS = [0.75, 1, 1.25, 1.5, 2] as const;
 export type PlaybackSpeed = (typeof PLAYBACK_SPEEDS)[number];
 
 export interface SettingsState {
