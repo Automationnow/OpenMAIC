@@ -918,10 +918,17 @@ export const TTS_PROVIDERS: Record<BuiltInTTSProviderId, TTSProviderConfig> = {
     voices: [
       {
         id: '59961ad8-07bd-487c-8585-4dde741078fa',
-        name: 'Derrick Voice 3',
+        name: 'Derrick Voice',
         language: 'en',
         gender: 'male',
         description: 'Automation Now LLC — Derrick Mitchell cloned voice',
+      },
+      {
+        id: '7445e3b9-3fc3-4d79-9603-56679a339570',
+        name: 'Kim Voice',
+        language: 'en',
+        gender: 'female',
+        description: 'Automation Now LLC — Kim Mitchell cloned voice',
       },
     ],
     supportedFormats: ['mp3'],
