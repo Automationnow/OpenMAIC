@@ -16,7 +16,14 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useI18n } from '@/lib/hooks/use-i18n';
 import { useSettingsStore } from '@/lib/store/settings';
-import { TTS_PROVIDERS, DEFAULT_TTS_VOICES } from '@/lib/audio/constants';
+import { TTS_PROVIDERS, DEFAULT_TTS_VOICES, getTTSVoices } from '@/lib/audio/constants';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { TTSProviderId } from '@/lib/audio/types';
 import { Volume2, Loader2, CheckCircle2, XCircle, Eye, EyeOff, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -298,6 +305,37 @@ export function TTSSettings({ selectedProviderId }: TTSSettingsProps) {
           })()}
         </>
       )}
+
+      {/* Voice selector — shown for providers with multiple built-in voices (e.g. Mistral) */}
+      {(() => {
+        const voices = isCustom ? [] : getTTSVoices(selectedProviderId);
+        if (voices.length <= 1) return null;
+        return (
+          <div className="space-y-2">
+            <Label className="text-sm">{t('settings.ttsVoice') || 'Voice'}</Label>
+            <Select
+              value={ttsVoice || voices[0]?.id || ''}
+              onValueChange={(value) => setTTSVoice(value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {voices.map((voice) => (
+                  <SelectItem key={voice.id} value={voice.id}>
+                    <div className="flex items-center gap-2">
+                      <span>{voice.name}</span>
+                      {voice.gender && (
+                        <span className="text-xs text-muted-foreground capitalize">{voice.gender}</span>
+                      )}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      })()}
 
       {/* Test TTS */}
       <div className="space-y-2">
