@@ -8,6 +8,33 @@ import { createLogger } from '@/lib/logger';
 
 const log = createLogger('TTS');
 
+/**
+ * Normalize text before sending to TTS to ensure correct pronunciation.
+ * Expands financial shorthand, abbreviations, and symbols that TTS engines
+ * commonly mispronounce (e.g. $1.2M -> "one point two million dollars").
+ */
+export function normalizeTTSText(text: string): string {
+  return text
+    // Currency with M/B/K suffix: $1.2M -> "one point two million dollars"
+    .replace(/\$(\d+\.\d+)M\b/gi, (_, n) => `${n.replace('.', ' point ')} million dollars`)
+    .replace(/\$(\d+)M\b/gi, (_, n) => `${n} million dollars`)
+    .replace(/\$(\d+\.\d+)B\b/gi, (_, n) => `${n.replace('.', ' point ')} billion dollars`)
+    .replace(/\$(\d+)B\b/gi, (_, n) => `${n} billion dollars`)
+    .replace(/\$(\d+\.\d+)K\b/gi, (_, n) => `${n.replace('.', ' point ')} thousand dollars`)
+    .replace(/\$(\d+)K\b/gi, (_, n) => `${n} thousand dollars`)
+    // Plain currency: $15 -> "15 dollars"
+    .replace(/\$(\d+(?:\.\d+)?)(?!\w)/g, (_, n) => `${n} dollars`)
+    // Percentages: 15% -> "15 percent"
+    .replace(/(\d+(?:\.\d+)?)%/g, '$1 percent')
+    // Common abbreviations
+    .replace(/\bROI\b/g, 'return on investment')
+    .replace(/\bRPA\b/g, 'robotic process automation')
+    .replace(/\bAI\b/g, 'artificial intelligence')
+    .replace(/\bHR\b/g, 'human resources')
+    .replace(/\bCFO\b/g, 'chief financial officer')
+    .replace(/\bCEO\b/g, 'chief executive officer');
+}
+
 /** Provider-specific max text length limits. */
 export const TTS_MAX_TEXT_LENGTH: Partial<Record<TTSProviderId, number>> = {
   'glm-tts': 1024,

@@ -1,4 +1,5 @@
 'use client';
+import { normalizeTTSText } from './tts-utils';
 
 const VOICES_LOAD_TIMEOUT_MS = 2000;
 const PREVIEW_TIMEOUT_MS = 30000;
@@ -150,7 +151,7 @@ export function playBrowserTTSPreview(options: PlayBrowserTTSPreviewOptions): {
           return;
         }
 
-        const utterance = new SpeechSynthesisUtterance(options.text);
+        const utterance = new SpeechSynthesisUtterance(normalizeTTSText(options.text));
         utterance.rate = options.rate ?? 1;
 
         const { voice, lang } = resolveBrowserVoice(voices, options.voice ?? '', options.text);
