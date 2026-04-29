@@ -605,7 +605,7 @@ export const PROVIDERS: Record<ProviderId, ProviderConfig> = {
         id: 'deepseek-chat',
         name: 'DeepSeek-Chat',
         contextWindow: 128000,
-        outputWindow: 4096,
+        outputWindow: 8192,
         capabilities: {
           streaming: true,
           tools: true,
