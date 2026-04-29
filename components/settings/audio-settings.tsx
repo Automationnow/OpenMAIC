@@ -458,6 +458,40 @@ export function AudioSettings({ onSave }: AudioSettingsProps = {}) {
             </Select>
           </div>
 
+          {/* Voice selector — shown when provider has multiple built-in voices */}
+          {(() => {
+            const voices = getTTSVoices(ttsProviderId);
+            if (voices.length <= 1) return null;
+            return (
+              <div className="space-y-2">
+                <Label className="text-sm">{t('settings.ttsVoice') || 'Voice'}</Label>
+                <Select
+                  value={ttsVoice || voices[0]?.id || ''}
+                  onValueChange={(value) => {
+                    setTTSVoice(value);
+                    onSave?.();
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {voices.map((voice) => (
+                      <SelectItem key={voice.id} value={voice.id}>
+                        <div className="flex items-center gap-2">
+                          <span>{voice.name}</span>
+                          {voice.gender && (
+                            <span className="text-xs text-muted-foreground capitalize">{voice.gender}</span>
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            );
+          })()}
+
           {(ttsProvider.requiresApiKey ||
             ttsProvidersConfig[ttsProviderId]?.isServerConfigured) && (
             <>
