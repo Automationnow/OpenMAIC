@@ -606,7 +606,7 @@ async function generateMistralTTS(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: config.modelId || 'mistral-tts',
+      model: config.modelId || 'voxtral-mini-tts-2603',
       input: text,
       voice: config.voice,
       response_format: 'mp3',

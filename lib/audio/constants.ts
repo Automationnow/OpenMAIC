@@ -912,9 +912,9 @@ export const TTS_PROVIDERS: Record<BuiltInTTSProviderId, TTSProviderConfig> = {
     defaultBaseUrl: 'https://api.mistral.ai/v1',
     icon: '/logos/mistral.svg',
     models: [
-      { id: 'mistral-tts', name: 'Mistral TTS' },
+      { id: 'voxtral-mini-tts-2603', name: 'Voxtral Mini TTS' },
     ],
-    defaultModelId: 'mistral-tts',
+    defaultModelId: 'voxtral-mini-tts-2603',
     voices: [
       {
         id: '59961ad8-07bd-487c-8585-4dde741078fa',
@@ -1168,7 +1168,7 @@ export const DEFAULT_TTS_MODELS: Record<BuiltInTTSProviderId, string> = {
   'doubao-tts': '',
   'elevenlabs-tts': 'eleven_multilingual_v2',
   'minimax-tts': 'speech-2.8-hd',
-  'mistral-tts': 'mistral-tts',
+  'mistral-tts': 'voxtral-mini-tts-2603',
   'browser-native-tts': '',
 };
 
