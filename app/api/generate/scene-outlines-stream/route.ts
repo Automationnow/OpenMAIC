@@ -194,10 +194,10 @@ export async function POST(req: NextRequest) {
     let mediaGenerationPolicy = '';
     if (!imageGenerationEnabled && !videoGenerationEnabled) {
       mediaGenerationPolicy =
-        '**IMPORTANT: Do NOT include any mediaGenerations in the outlines. Both image and video generation are disabled.**';
+        '**IMPORTANT: Do NOT include any mediaGenerations in the outlines. Both image and video generation are disabled. Instead of generated images or videos, use `interactive` scene type with a `diagram` or `simulation` widget to visualize processes, workflows, and concepts. For example, a process flow should be an interactive diagram widget, not a generated image.**';
     } else if (!imageGenerationEnabled) {
       mediaGenerationPolicy =
-        '**IMPORTANT: Do NOT include any image mediaGenerations (type: "image") in the outlines. Image generation is disabled. Video generation is allowed.**';
+        '**IMPORTANT: Do NOT include any image mediaGenerations (type: "image") in the outlines. Image generation is disabled. For process flows, diagrams, and visual concepts, use `interactive` scene type with a `diagram` widget instead. Video generation is allowed.**';
     } else if (!videoGenerationEnabled) {
       mediaGenerationPolicy =
         '**IMPORTANT: Do NOT include any video mediaGenerations (type: "video") in the outlines. Video generation is disabled. Image generation is allowed.**';
