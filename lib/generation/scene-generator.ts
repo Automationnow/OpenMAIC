@@ -767,12 +767,11 @@ async function generateSlideContent(
     return el;
   });
 
-  // ── Automation Now logo injection on every other slide (even order: 2, 4, 6...) ──
+  // ── Automation Now logo injection on ALL slides (every slide including Slide 1) ──
   const LOGO_URL = '/automation-now-logo.png';
   const LOGO_SIZE = 60;
   const LOGO_MARGIN = 12;
-  const slideOrder = typeof outline.order === 'number' ? outline.order : 0;
-  if (slideOrder % 2 === 0) {
+  if (true) {
     const logoElement: PPTElement = {
       type: 'image',
       id: `logo_${nanoid(8)}`,
