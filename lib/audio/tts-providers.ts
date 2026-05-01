@@ -95,6 +95,7 @@
 import type { TTSModelConfig } from './types';
 import { isCustomTTSProvider } from './types';
 import { TTS_PROVIDERS } from './constants';
+import { normalizeTTSText } from './tts-utils';
 
 /**
  * Result of TTS generation
@@ -598,6 +599,8 @@ async function generateMistralTTS(
   text: string,
 ): Promise<TTSGenerationResult> {
   const baseUrl = config.baseUrl || TTS_PROVIDERS['mistral-tts'].defaultBaseUrl;
+  // Normalize text before sending to TTS to fix currency/abbreviation pronunciation
+  const normalizedText = normalizeTTSText(text);
 
   const response = await fetch(`${baseUrl}/audio/speech`, {
     method: 'POST',
@@ -607,7 +610,7 @@ async function generateMistralTTS(
     },
     body: JSON.stringify({
       model: config.modelId || 'voxtral-mini-tts-2603',
-      input: text,
+      input: normalizedText,
       voice: config.voice,
       response_format: 'mp3',
     }),
