@@ -948,6 +948,8 @@ Before outputting JSON, verify:
 
 **🔴 P0 — Critical (must pass 100%)**:
 
+0. ✓ **Canvas height overflow prevention**: Before placing any element, calculate the total vertical space used: `sum of (top + height)` for all elements. The bottom-most element must satisfy: `top + height ≤ canvas_height - 50`. If content is too tall, reduce font sizes, merge bullet points, or remove lower-priority elements. NEVER let any element extend below `canvas_height - 50`. For a 960×540 canvas, no element's bottom edge (`top + height`) may exceed **490**. For a 1280×720 canvas, the limit is **670**.
+
 1. ✓ All text heights are from the lookup table (NOT estimated values like 70, 80, 90)
 2. ✓ All text elements pass width calculation: `char_count ≤ (width - 20) / font_size`
 3. ✓ Aligned elements have matching center points (< 2px difference)
