@@ -15,6 +15,16 @@ const log = createLogger('TTS');
  */
 export function normalizeTTSText(text: string): string {
   return text
+    // Written-out currency: $1.2 million -> "one point two million dollars"
+    // MUST come before all other rules
+    .replace(/\$\s*(\d+\.\d+)\s+million\b/gi, (_, n) => `${n.replace('.', ' point ')} million dollars`)
+    .replace(/\$\s*(\d+)\s+million\b/gi, (_, n) => `${n} million dollars`)
+    .replace(/\$\s*(\d+\.\d+)\s+billion\b/gi, (_, n) => `${n.replace('.', ' point ')} billion dollars`)
+    .replace(/\$\s*(\d+)\s+billion\b/gi, (_, n) => `${n} billion dollars`)
+    .replace(/\$\s*(\d+\.\d+)\s+trillion\b/gi, (_, n) => `${n.replace('.', ' point ')} trillion dollars`)
+    .replace(/\$\s*(\d+)\s+trillion\b/gi, (_, n) => `${n} trillion dollars`)
+    .replace(/\$\s*(\d+\.\d+)\s+thousand\b/gi, (_, n) => `${n.replace('.', ' point ')} thousand dollars`)
+    .replace(/\$\s*(\d+)\s+thousand\b/gi, (_, n) => `${n} thousand dollars`)
     // Currency with M/B/K/T suffix — MUST come before plain dollar fallback
     // $1.2M -> "one point two million dollars"
     .replace(/\$\s*(\d+\.\d+)\s*[Mm](?:illion)?\b/g, (_, n) => `${n.replace('.', ' point ')} million dollars`)
