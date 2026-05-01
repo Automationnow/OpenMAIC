@@ -740,6 +740,54 @@ async function generateSlideContent(
     rotate: 0,
   })) as PPTElement[];
 
+  // ── Overflow clamping: ensure no element bottom edge exceeds canvas height ──
+  const CANVAS_HEIGHT = canvasHeight;
+  const CANVAS_WIDTH = canvasWidth;
+  const SAFE_BOTTOM = CANVAS_HEIGHT - 10;
+  const SAFE_RIGHT = CANVAS_WIDTH - 10;
+  const clampedElements: PPTElement[] = processedElements.map((el) => {
+    const e = el as PPTElement & { left?: number; top?: number; width?: number; height?: number };
+    if (typeof e.top === 'number' && typeof e.height === 'number') {
+      const bottom = e.top + e.height;
+      if (bottom > SAFE_BOTTOM) {
+        const overflow = bottom - SAFE_BOTTOM;
+        // Shrink height to fit, but keep at least 20px
+        const newHeight = Math.max(20, e.height - overflow);
+        return { ...el, height: newHeight } as PPTElement;
+      }
+    }
+    if (typeof e.left === 'number' && typeof e.width === 'number') {
+      const right = e.left + e.width;
+      if (right > SAFE_RIGHT) {
+        const overflow = right - SAFE_RIGHT;
+        const newWidth = Math.max(20, e.width - overflow);
+        return { ...el, width: newWidth } as PPTElement;
+      }
+    }
+    return el;
+  });
+
+  // ── Automation Now logo injection on every other slide (even order: 2, 4, 6...) ──
+  const LOGO_URL = '/automation-now-logo.png';
+  const LOGO_SIZE = 60;
+  const LOGO_MARGIN = 12;
+  const slideOrder = typeof outline.order === 'number' ? outline.order : 0;
+  if (slideOrder % 2 === 0) {
+    const logoElement: PPTElement = {
+      type: 'image',
+      id: `logo_${nanoid(8)}`,
+      left: CANVAS_WIDTH - LOGO_SIZE - LOGO_MARGIN,
+      top: CANVAS_HEIGHT - LOGO_SIZE - LOGO_MARGIN,
+      width: LOGO_SIZE,
+      height: LOGO_SIZE,
+      rotate: 0,
+      fixedRatio: true,
+      src: LOGO_URL,
+      lock: true,
+    } as PPTElement;
+    clampedElements.push(logoElement);
+  }
+
   // Process background
   let background: SlideBackground | undefined;
   if (generatedData.background) {
@@ -754,7 +802,7 @@ async function generateSlideContent(
   }
 
   return {
-    elements: processedElements,
+    elements: clampedElements,
     background,
     remark: generatedData.remark || outline.description,
   };
