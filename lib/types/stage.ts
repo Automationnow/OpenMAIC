@@ -69,6 +69,9 @@ export interface Scene {
     directorPrompt?: string; // Optional custom director instructions
   };
 
+  // Lock flag — locked scenes are skipped during regeneration
+  locked?: boolean;
+
   // Metadata
   createdAt?: number;
   updatedAt?: number;

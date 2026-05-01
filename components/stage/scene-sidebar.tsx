@@ -11,6 +11,8 @@ import {
   Globe,
   AlertCircle,
   RefreshCw,
+  Lock,
+  LockOpen,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThumbnailSlide } from '@/components/slide-renderer/components/ThumbnailSlide';
@@ -25,6 +27,7 @@ interface SceneSidebarProps {
   readonly onCollapseChange: (collapsed: boolean) => void;
   readonly onSceneSelect?: (sceneId: string) => void;
   readonly onRetryOutline?: (outlineId: string) => Promise<void>;
+  readonly onRegenerateSingleScene?: (sceneId: string) => Promise<void>;
 }
 
 const DEFAULT_WIDTH = 220;
@@ -36,6 +39,7 @@ export function SceneSidebar({
   onCollapseChange,
   onSceneSelect,
   onRetryOutline,
+  onRegenerateSingleScene,
 }: SceneSidebarProps) {
   const { t } = useI18n();
   const router = useRouter();
@@ -46,6 +50,24 @@ export function SceneSidebar({
   const viewportRatio = useCanvasStore.use.viewportRatio();
 
   const [retryingOutlineId, setRetryingOutlineId] = useState<string | null>(null);
+  const [regeneratingSceneId, setRegeneratingSceneId] = useState<string | null>(null);
+  const { updateScene } = useStageStore();
+
+  const handleToggleLock = (e: React.MouseEvent, sceneId: string, currentLocked: boolean) => {
+    e.stopPropagation();
+    updateScene(sceneId, { locked: !currentLocked });
+  };
+
+  const handleRegenerateScene = async (e: React.MouseEvent, sceneId: string) => {
+    e.stopPropagation();
+    if (!onRegenerateSingleScene || regeneratingSceneId) return;
+    setRegeneratingSceneId(sceneId);
+    try {
+      await onRegenerateSingleScene(sceneId);
+    } finally {
+      setRegeneratingSceneId(null);
+    }
+  };
 
   const handleRetryOutline = async (outlineId: string) => {
     if (!onRetryOutline) return;
@@ -170,7 +192,7 @@ export function SceneSidebar({
               >
                 {/* Scene Header */}
                 <div className="flex justify-between items-center px-2 pt-0.5">
-                  <div className="flex items-center gap-2 max-w-full">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
                     <span
                       className={cn(
                         'text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shrink-0',
@@ -184,7 +206,7 @@ export function SceneSidebar({
                     <span
                       data-testid="scene-title"
                       className={cn(
-                        'text-xs font-bold truncate transition-colors',
+                        'text-xs font-bold truncate transition-colors flex-1 min-w-0',
                         isActive
                           ? 'text-purple-700 dark:text-purple-300'
                           : 'text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100',
@@ -192,6 +214,38 @@ export function SceneSidebar({
                     >
                       {scene.title}
                     </span>
+                  </div>
+                  {/* Lock + Regenerate action buttons — visible on hover */}
+                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-1">
+                    {/* Lock toggle */}
+                    <button
+                      onClick={(e) => handleToggleLock(e, scene.id, !!scene.locked)}
+                      title={scene.locked ? 'Unlock this slide' : 'Lock this slide (skip on regenerate)'}
+                      className={cn(
+                        'w-5 h-5 rounded flex items-center justify-center transition-colors',
+                        scene.locked
+                          ? 'text-amber-500 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-800/40'
+                          : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
+                      )}
+                    >
+                      {scene.locked ? <Lock className="w-3 h-3" /> : <LockOpen className="w-3 h-3" />}
+                    </button>
+                    {/* Regenerate single slide */}
+                    {!scene.locked && onRegenerateSingleScene && (
+                      <button
+                        onClick={(e) => handleRegenerateScene(e, scene.id)}
+                        title="Regenerate this slide only"
+                        disabled={regeneratingSceneId === scene.id}
+                        className={cn(
+                          'w-5 h-5 rounded flex items-center justify-center transition-colors',
+                          regeneratingSceneId === scene.id
+                            ? 'text-purple-400 dark:text-purple-500 bg-purple-50 dark:bg-purple-900/30'
+                            : 'text-gray-400 dark:text-gray-500 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30',
+                        )}
+                      >
+                        <RefreshCw className={cn('w-3 h-3', regeneratingSceneId === scene.id && 'animate-spin')} />
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -325,6 +379,18 @@ export function SceneSidebar({
                             : 'group-hover:bg-black/5 dark:group-hover:bg-white/5',
                         )}
                       />
+                    )}
+                    {/* Lock badge overlay on thumbnail */}
+                    {scene.locked && (
+                      <div className="absolute top-1 right-1 w-4 h-4 rounded bg-amber-500/90 flex items-center justify-center shadow-sm">
+                        <Lock className="w-2.5 h-2.5 text-white" />
+                      </div>
+                    )}
+                    {/* Regenerating spinner overlay */}
+                    {regeneratingSceneId === scene.id && (
+                      <div className="absolute inset-0 bg-purple-900/40 flex items-center justify-center">
+                        <RefreshCw className="w-5 h-5 text-white animate-spin" />
+                      </div>
                     )}
                   </div>
                 </div>

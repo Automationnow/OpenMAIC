@@ -546,5 +546,123 @@ export function useSceneGenerator(options: UseSceneGeneratorOptions = {}) {
     [store],
   );
 
-  return { generateRemaining, retrySingleOutline, stop, isGenerating };
+  /**
+   * Regenerate any existing scene from scratch (content → actions → TTS).
+   * The old scene is replaced in-place; locked scenes are rejected.
+   */
+  const regenerateSingleScene = useCallback(
+    async (sceneId: string) => {
+      const state = store.getState();
+      const scene = state.scenes.find((s) => s.id === sceneId);
+      const params = lastParamsRef.current;
+      if (!scene || !state.stage || !params) return;
+      if (scene.locked) return; // locked — refuse silently
+
+      // Find the matching outline by order
+      const outline = state.outlines.find((o) => o.order === scene.order);
+      if (!outline) return;
+
+      const abortController = new AbortController();
+      const signal = abortController.signal;
+
+      // Mark as regenerating in the sidebar
+      store.getState().setGenerationStatus('generating');
+      const currentGenerating = store.getState().generatingOutlines;
+      if (!currentGenerating.some((o) => o.id === outline.id)) {
+        store.getState().setGeneratingOutlines([...currentGenerating, outline]);
+      }
+
+      try {
+        // Step 1: Content
+        const contentResult = await fetchSceneContent(
+          {
+            outline,
+            allOutlines: state.outlines,
+            stageId: state.stage.id,
+            pdfImages: params.pdfImages,
+            imageMapping: params.imageMapping,
+            stageInfo: params.stageInfo,
+            agents: params.agents,
+            languageDirective: params.languageDirective,
+          },
+          signal,
+        );
+
+        if (!contentResult.success || !contentResult.content) {
+          store.getState().setGeneratingOutlines(
+            store.getState().generatingOutlines.filter((o) => o.id !== outline.id),
+          );
+          store.getState().setGenerationStatus('paused');
+          return;
+        }
+
+        // Step 2: Actions
+        const sortedScenes = [...store.getState().scenes].sort((a, b) => a.order - b.order);
+        const prevScene = sortedScenes.filter((s) => s.order < scene.order).pop();
+        const previousSpeeches = prevScene
+          ? (prevScene.actions || [])
+              .filter((a): a is SpeechAction => a.type === 'speech')
+              .map((a) => a.text)
+          : [];
+
+        const actionsResult = await fetchSceneActions(
+          {
+            outline: contentResult.effectiveOutline || outline,
+            allOutlines: state.outlines,
+            content: contentResult.content,
+            stageId: state.stage.id,
+            agents: params.agents,
+            previousSpeeches,
+            userProfile: params.userProfile,
+            languageDirective: params.languageDirective,
+          },
+          signal,
+        );
+
+        if (!actionsResult.success || !actionsResult.scene) {
+          store.getState().setGeneratingOutlines(
+            store.getState().generatingOutlines.filter((o) => o.id !== outline.id),
+          );
+          store.getState().setGenerationStatus('paused');
+          return;
+        }
+
+        // Step 3: TTS
+        const settings = useSettingsStore.getState();
+        if (settings.ttsEnabled && settings.ttsProviderId !== 'browser-native-tts') {
+          const ttsResult = await generateTTSForScene(actionsResult.scene, signal);
+          if (!ttsResult.success) {
+            store.getState().setGeneratingOutlines(
+              store.getState().generatingOutlines.filter((o) => o.id !== outline.id),
+            );
+            store.getState().setGenerationStatus('paused');
+            return;
+          }
+        }
+
+        // Replace the old scene with the new one, preserving the lock state
+        const newScene: Scene = {
+          ...actionsResult.scene,
+          id: scene.id, // keep same ID so the sidebar doesn't flicker
+          locked: scene.locked,
+        };
+        store.getState().updateScene(scene.id, newScene);
+        store.getState().setGeneratingOutlines(
+          store.getState().generatingOutlines.filter((o) => o.id !== outline.id),
+        );
+        store.getState().setGenerationStatus('completed');
+        options.onSceneGenerated?.(newScene, newScene.order);
+      } catch (err) {
+        store.getState().setGeneratingOutlines(
+          store.getState().generatingOutlines.filter((o) => o.id !== outline.id),
+        );
+        if (!(err instanceof DOMException && err.name === 'AbortError')) {
+          store.getState().setGenerationStatus('paused');
+        }
+      }
+    },
+    [options, store],
+  );
+
+  return { generateRemaining, retrySingleOutline, regenerateSingleScene, stop, isGenerating };
 }
