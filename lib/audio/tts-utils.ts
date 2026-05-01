@@ -15,15 +15,23 @@ const log = createLogger('TTS');
  */
 export function normalizeTTSText(text: string): string {
   return text
-    // Currency with M/B/K suffix: $1.2M -> "one point two million dollars"
-    .replace(/\$(\d+\.\d+)M\b/gi, (_, n) => `${n.replace('.', ' point ')} million dollars`)
-    .replace(/\$(\d+)M\b/gi, (_, n) => `${n} million dollars`)
-    .replace(/\$(\d+\.\d+)B\b/gi, (_, n) => `${n.replace('.', ' point ')} billion dollars`)
-    .replace(/\$(\d+)B\b/gi, (_, n) => `${n} billion dollars`)
-    .replace(/\$(\d+\.\d+)K\b/gi, (_, n) => `${n.replace('.', ' point ')} thousand dollars`)
-    .replace(/\$(\d+)K\b/gi, (_, n) => `${n} thousand dollars`)
-    // Plain currency: $15 -> "15 dollars"
-    .replace(/\$(\d+(?:\.\d+)?)(?!\w)/g, (_, n) => `${n} dollars`)
+    // Currency with M/B/K/T suffix — MUST come before plain dollar fallback
+    // $1.2M -> "one point two million dollars"
+    .replace(/\$\s*(\d+\.\d+)\s*[Mm](?:illion)?\b/g, (_, n) => `${n.replace('.', ' point ')} million dollars`)
+    .replace(/\$\s*(\d+)\s*[Mm](?:illion)?\b/g, (_, n) => `${n} million dollars`)
+    // $1.2B -> "one point two billion dollars"
+    .replace(/\$\s*(\d+\.\d+)\s*[Bb](?:illion)?\b/g, (_, n) => `${n.replace('.', ' point ')} billion dollars`)
+    .replace(/\$\s*(\d+)\s*[Bb](?:illion)?\b/g, (_, n) => `${n} billion dollars`)
+    // $500K -> "500 thousand dollars"
+    .replace(/\$\s*(\d+\.\d+)\s*[Kk](?:illion)?\b/g, (_, n) => `${n.replace('.', ' point ')} thousand dollars`)
+    .replace(/\$\s*(\d+)\s*[Kk]\b/g, (_, n) => `${n} thousand dollars`)
+    // $2T -> "2 trillion dollars"
+    .replace(/\$\s*(\d+\.\d+)\s*[Tt](?:rillion)?\b/g, (_, n) => `${n.replace('.', ' point ')} trillion dollars`)
+    .replace(/\$\s*(\d+)\s*[Tt](?:rillion)?\b/g, (_, n) => `${n} trillion dollars`)
+    // Plain currency fallback: $15 -> "15 dollars" (only after all suffix patterns handled)
+    .replace(/\$\s*(\d+(?:,\d{3})*(?:\.\d+)?)(?![MmBbKkTt\d])/g, (_, n) => `${n.replace(/,/g, '')} dollars`)
+    // Large plain numbers with commas: 1,200,000 -> "1200000" for TTS
+    .replace(/(\d{1,3}(?:,\d{3})+)/g, (_, n) => n.replace(/,/g, ''))
     // Percentages: 15% -> "15 percent"
     .replace(/(\d+(?:\.\d+)?)%/g, '$1 percent')
     // Common abbreviations
@@ -32,7 +40,12 @@ export function normalizeTTSText(text: string): string {
     .replace(/\bAI\b/g, 'artificial intelligence')
     .replace(/\bHR\b/g, 'human resources')
     .replace(/\bCFO\b/g, 'chief financial officer')
-    .replace(/\bCEO\b/g, 'chief executive officer');
+    .replace(/\bCEO\b/g, 'chief executive officer')
+    .replace(/\bCTO\b/g, 'chief technology officer')
+    .replace(/\bCOO\b/g, 'chief operating officer')
+    .replace(/\bSLA\b/g, 'service level agreement')
+    .replace(/\bKPI\b/g, 'key performance indicator')
+    .replace(/\bFTE\b/g, 'full time equivalent');
 }
 
 /** Provider-specific max text length limits. */
