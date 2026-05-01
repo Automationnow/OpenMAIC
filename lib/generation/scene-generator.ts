@@ -743,28 +743,40 @@ async function generateSlideContent(
   // ── Overflow clamping: ensure no element bottom edge exceeds canvas height ──
   const CANVAS_HEIGHT = canvasHeight;
   const CANVAS_WIDTH = canvasWidth;
-  const SAFE_BOTTOM = CANVAS_HEIGHT - 10;
+  const SAFE_BOTTOM = CANVAS_HEIGHT - 50; // 50px margin from bottom edge
   const SAFE_RIGHT = CANVAS_WIDTH - 10;
   const clampedElements: PPTElement[] = processedElements.map((el) => {
     const e = el as PPTElement & { left?: number; top?: number; width?: number; height?: number };
+    let updated = { ...el } as PPTElement & { left?: number; top?: number; width?: number; height?: number };
+
+    // Clamp vertical overflow: if element top starts below safe boundary, move it up
     if (typeof e.top === 'number' && typeof e.height === 'number') {
-      const bottom = e.top + e.height;
+      // If the element starts below the safe bottom, reposition it
+      if (e.top >= SAFE_BOTTOM) {
+        updated = { ...updated, top: SAFE_BOTTOM - e.height };
+      }
+      // After repositioning, check if bottom still overflows and shrink height
+      const newTop = typeof updated.top === 'number' ? updated.top : e.top;
+      const newHeight = typeof updated.height === 'number' ? updated.height : e.height;
+      const bottom = newTop + newHeight;
       if (bottom > SAFE_BOTTOM) {
         const overflow = bottom - SAFE_BOTTOM;
-        // Shrink height to fit, but keep at least 20px
-        const newHeight = Math.max(20, e.height - overflow);
-        return { ...el, height: newHeight } as PPTElement;
+        const clampedHeight = Math.max(20, newHeight - overflow);
+        updated = { ...updated, height: clampedHeight };
       }
     }
+
+    // Clamp horizontal overflow
     if (typeof e.left === 'number' && typeof e.width === 'number') {
       const right = e.left + e.width;
       if (right > SAFE_RIGHT) {
         const overflow = right - SAFE_RIGHT;
         const newWidth = Math.max(20, e.width - overflow);
-        return { ...el, width: newWidth } as PPTElement;
+        updated = { ...updated, width: newWidth };
       }
     }
-    return el;
+
+    return updated as PPTElement;
   });
 
   // ── Automation Now logo injection on ALL slides (every slide including Slide 1) ──

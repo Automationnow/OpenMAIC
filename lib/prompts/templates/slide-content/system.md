@@ -948,7 +948,17 @@ Before outputting JSON, verify:
 
 **🔴 P0 — Critical (must pass 100%)**:
 
-0. ✓ **Canvas height overflow prevention**: Before placing any element, calculate the total vertical space used: `sum of (top + height)` for all elements. The bottom-most element must satisfy: `top + height ≤ canvas_height - 50`. If content is too tall, reduce font sizes, merge bullet points, or remove lower-priority elements. NEVER let any element extend below `canvas_height - 50`. For a 960×540 canvas, no element's bottom edge (`top + height`) may exceed **490**. For a 1280×720 canvas, the limit is **670**.
+0. ✓ **Canvas height overflow prevention** (CRITICAL — enforced by post-processor):
+   - The bottom-most element MUST satisfy: `top + height ≤ canvas_height - 50`.
+   - For a **960×540** canvas: no element's bottom edge may exceed **490**.
+   - For a **1280×720** canvas: no element's bottom edge may exceed **670**.
+   - **Before placing elements**, plan your layout top-down: title (~80px), subtitle (~50px), divider (~10px), content sections. If the total exceeds the limit, you MUST:
+     1. Reduce font sizes (body text: 14-16px, key points: 16-18px)
+     2. Merge or remove lower-priority bullet points
+     3. Reduce spacing between sections (use 15-20px gaps instead of 30-40px)
+     4. Combine the Socratic Question section into the last content block rather than adding a new section
+   - **NEVER** place a section header (e.g., "Facilitator's Socratic Question") near the bottom of the canvas if there is not enough room for both the header AND its content below it. Either move it up or omit it.
+   - NEVER let any element extend below `canvas_height - 50`.
 
 1. ✓ All text heights are from the lookup table (NOT estimated values like 70, 80, 90)
 2. ✓ All text elements pass width calculation: `char_count ≤ (width - 20) / font_size`
