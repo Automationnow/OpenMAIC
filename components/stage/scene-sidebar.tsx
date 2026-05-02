@@ -28,6 +28,8 @@ interface SceneSidebarProps {
   readonly onSceneSelect?: (sceneId: string) => void;
   readonly onRetryOutline?: (outlineId: string) => Promise<void>;
   readonly onRegenerateSingleScene?: (sceneId: string) => Promise<void>;
+  /** When true, hides lock/regenerate authoring controls */
+  readonly isLearnerMode?: boolean;
 }
 
 const DEFAULT_WIDTH = 220;
@@ -40,6 +42,7 @@ export function SceneSidebar({
   onSceneSelect,
   onRetryOutline,
   onRegenerateSingleScene,
+  isLearnerMode = false,
 }: SceneSidebarProps) {
   const { t } = useI18n();
   const router = useRouter();
@@ -215,8 +218,8 @@ export function SceneSidebar({
                       {scene.title}
                     </span>
                   </div>
-                  {/* Lock + Regenerate action buttons — visible on hover */}
-                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-1">
+                  {/* Lock + Regenerate action buttons — visible on hover, hidden in learner mode */}
+                  {!isLearnerMode && <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-1">
                     {/* Lock toggle */}
                     <button
                       onClick={(e) => handleToggleLock(e, scene.id, !!scene.locked)}
@@ -246,7 +249,8 @@ export function SceneSidebar({
                         <RefreshCw className={cn('w-3 h-3', regeneratingSceneId === scene.id && 'animate-spin')} />
                       </button>
                     )}
-                  </div>
+                  </div>}
+                  {/* End learner mode guard */}
                 </div>
 
                 {/* Thumbnail */}

@@ -11,6 +11,7 @@ import {
   FileDown,
   Package,
   Archive,
+  Globe,
 } from 'lucide-react';
 import { useI18n } from '@/lib/hooks/use-i18n';
 import { useTheme } from '@/lib/hooks/use-theme';
@@ -23,12 +24,15 @@ import { useStageStore } from '@/lib/store/stage';
 import { useMediaGenerationStore } from '@/lib/store/media-generation';
 import { useExportPPTX } from '@/lib/export/use-export-pptx';
 import { useExportClassroom } from '@/lib/export/use-export-classroom';
+import { useExportOfflineHTML } from '@/lib/export/use-export-offline-html';
 
 interface HeaderProps {
   readonly currentSceneTitle: string;
+  /** When true, hides all authoring controls (Settings, Export, Language switcher) */
+  readonly isLearnerMode?: boolean;
 }
 
-export function Header({ currentSceneTitle }: HeaderProps) {
+export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps) {
   const { t } = useI18n();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
@@ -38,6 +42,7 @@ export function Header({ currentSceneTitle }: HeaderProps) {
   // Export
   const { exporting: isExporting, exportPPTX, exportResourcePack } = useExportPPTX();
   const { exporting: isExportingZip, exportClassroomZip } = useExportClassroom();
+  const { exporting: isExportingOfflineHTML, exportOfflineHTML } = useExportOfflineHTML();
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
   const scenes = useStageStore((s) => s.scenes);
@@ -50,6 +55,8 @@ export function Header({ currentSceneTitle }: HeaderProps) {
     generatingOutlines.length === 0 &&
     failedOutlines.length === 0 &&
     Object.values(mediaTasks).every((task) => task.status === 'done' || task.status === 'failed');
+
+  const isAnyExporting = isExporting || isExportingZip || isExportingOfflineHTML;
 
   const themeRef = useRef<HTMLDivElement>(null);
 
@@ -98,10 +105,10 @@ export function Header({ currentSceneTitle }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md px-2 py-1.5 rounded-full border border-gray-100/50 dark:border-gray-700/50 shadow-sm shrink-0">
-          {/* Language Selector */}
-          <LanguageSwitcher onOpen={() => setThemeOpen(false)} />
+          {/* Language Selector — hidden in learner mode */}
+          {!isLearnerMode && <LanguageSwitcher onOpen={() => setThemeOpen(false)} />}
 
-          <div className="w-[1px] h-4 bg-gray-200 dark:bg-gray-700" />
+          {!isLearnerMode && <div className="w-[1px] h-4 bg-gray-200 dark:bg-gray-700" />}
 
           {/* Theme Selector */}
           <div className="relative" ref={themeRef}>
@@ -163,41 +170,44 @@ export function Header({ currentSceneTitle }: HeaderProps) {
             )}
           </div>
 
-          <div className="w-[1px] h-4 bg-gray-200 dark:bg-gray-700" />
+          {!isLearnerMode && <div className="w-[1px] h-4 bg-gray-200 dark:bg-gray-700" />}
 
-          {/* Settings Button */}
-          <div className="relative">
-            <button
-              onClick={() => setSettingsOpen(true)}
-              className="p-2 rounded-full text-gray-400 dark:text-gray-500 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-gray-200 hover:shadow-sm transition-all group"
-            >
-              <Settings className="w-4 h-4 group-hover:rotate-90 transition-transform duration-500" />
-            </button>
-          </div>
+          {/* Settings Button — hidden in learner mode */}
+          {!isLearnerMode && (
+            <div className="relative">
+              <button
+                onClick={() => setSettingsOpen(true)}
+                className="p-2 rounded-full text-gray-400 dark:text-gray-500 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-gray-200 hover:shadow-sm transition-all group"
+              >
+                <Settings className="w-4 h-4 group-hover:rotate-90 transition-transform duration-500" />
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Export Dropdown */}
+        {/* Export Dropdown — hidden in learner mode */}
+        {!isLearnerMode && (
         <div className="relative" ref={exportRef}>
           <button
             onClick={() => {
-              if (canExport && !isExporting && !isExportingZip) setExportMenuOpen(!exportMenuOpen);
+              if (canExport && !isAnyExporting) setExportMenuOpen(!exportMenuOpen);
             }}
-            disabled={!canExport || isExporting || isExportingZip}
+            disabled={!canExport || isAnyExporting}
             title={
               canExport
-                ? isExporting || isExportingZip
+                ? isAnyExporting
                   ? t('export.exporting')
                   : t('export.pptx')
                 : t('share.notReady')
             }
             className={cn(
               'shrink-0 p-2 rounded-full transition-all',
-              canExport && !isExporting && !isExportingZip
+              canExport && !isAnyExporting
                 ? 'text-gray-400 dark:text-gray-500 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-gray-200 hover:shadow-sm'
                 : 'text-gray-300 dark:text-gray-600 cursor-not-allowed opacity-50',
             )}
           >
-            {isExporting || isExportingZip ? (
+            {isAnyExporting ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <Download className="w-4 h-4" />
@@ -246,9 +256,27 @@ export function Header({ currentSceneTitle }: HeaderProps) {
                   </div>
                 </div>
               </button>
+              {/* Offline HTML export */}
+              <button
+                onClick={() => {
+                  setExportMenuOpen(false);
+                  exportOfflineHTML();
+                }}
+                disabled={isExportingOfflineHTML}
+                className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2.5"
+              >
+                <Globe className="w-4 h-4 text-gray-400 shrink-0" />
+                <div>
+                  <div>Offline HTML</div>
+                  <div className="text-[11px] text-gray-400 dark:text-gray-500">
+                    Single file, opens without internet
+                  </div>
+                </div>
+              </button>
             </div>
-          )}
+          </div>
         </div>
+        )}
       </header>
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </>

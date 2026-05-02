@@ -7,6 +7,7 @@ import { loadImageMapping } from '@/lib/utils/image-storage';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useSceneGenerator } from '@/lib/hooks/use-scene-generator';
+import { useLearnerMode } from '@/lib/hooks/use-learner-mode';
 import { useMediaGenerationStore } from '@/lib/store/media-generation';
 import { useWhiteboardHistoryStore } from '@/lib/store/whiteboard-history';
 import { createLogger } from '@/lib/logger';
@@ -25,6 +26,8 @@ export default function ClassroomDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   const generationStartedRef = useRef(false);
+
+  const isLearnerMode = useLearnerMode();
 
   const { generateRemaining, retrySingleOutline, regenerateSingleScene, stop } = useSceneGenerator({
     onComplete: () => {
@@ -204,7 +207,11 @@ export default function ClassroomDetailPage() {
               </div>
             </div>
           ) : (
-            <Stage onRetryOutline={retrySingleOutline} onRegenerateSingleScene={regenerateSingleScene} />
+            <Stage
+              onRetryOutline={retrySingleOutline}
+              onRegenerateSingleScene={regenerateSingleScene}
+              isLearnerMode={isLearnerMode}
+            />
           )}
         </div>
       </MediaStageProvider>

@@ -44,9 +44,12 @@ import { VisuallyHidden } from 'radix-ui';
 export function Stage({
   onRetryOutline,
   onRegenerateSingleScene,
+  isLearnerMode = false,
 }: {
   onRetryOutline?: (outlineId: string) => Promise<void>;
   onRegenerateSingleScene?: (sceneId: string) => Promise<void>;
+  /** When true, hides all authoring controls for learner-facing sessions */
+  isLearnerMode?: boolean;
 }) {
   const { t } = useI18n();
   const { mode, getCurrentScene, scenes, currentSceneId, setCurrentSceneId, generatingOutlines } =
@@ -942,13 +945,14 @@ export function Stage({
         onCollapseChange={setSidebarCollapsed}
         onSceneSelect={gatedSceneSwitch}
         onRetryOutline={onRetryOutline}
-        onRegenerateSingleScene={onRegenerateSingleScene}
+        onRegenerateSingleScene={isLearnerMode ? undefined : onRegenerateSingleScene}
+        isLearnerMode={isLearnerMode}
       />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0 relative">
         {/* Header */}
-        {!isPresenting && <Header currentSceneTitle={currentScene?.title || ''} />}
+        {!isPresenting && <Header currentSceneTitle={currentScene?.title || ''} isLearnerMode={isLearnerMode} />}
 
         {/* Canvas Area */}
         <div
