@@ -12,6 +12,8 @@ import {
   Package,
   Archive,
   Globe,
+  Link2,
+  Check,
 } from 'lucide-react';
 import { useI18n } from '@/lib/hooks/use-i18n';
 import { useTheme } from '@/lib/hooks/use-theme';
@@ -20,6 +22,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { SettingsDialog } from './settings';
 import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 import { useStageStore } from '@/lib/store/stage';
 import { useMediaGenerationStore } from '@/lib/store/media-generation';
 import { useExportPPTX } from '@/lib/export/use-export-pptx';
@@ -44,7 +47,18 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
   const { exporting: isExportingZip, exportClassroomZip } = useExportClassroom();
   const { exporting: isExportingOfflineHTML, exportOfflineHTML } = useExportOfflineHTML();
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [learnerLinkCopied, setLearnerLinkCopied] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+
+  const copyLearnerLink = useCallback(() => {
+    const learnerUrl = `${window.location.origin}${pathname}?mode=learner`;
+    navigator.clipboard.writeText(learnerUrl).then(() => {
+      setLearnerLinkCopied(true);
+      setTimeout(() => setLearnerLinkCopied(false), 2500);
+    });
+    setExportMenuOpen(false);
+  }, [pathname]);
   const scenes = useStageStore((s) => s.scenes);
   const generatingOutlines = useStageStore((s) => s.generatingOutlines);
   const failedOutlines = useStageStore((s) => s.failedOutlines);
@@ -270,6 +284,26 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
                   <div>Offline HTML</div>
                   <div className="text-[11px] text-gray-400 dark:text-gray-500">
                     Single file, opens without internet
+                  </div>
+                </div>
+              </button>
+              {/* Copy Learner Link */}
+              <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
+              <button
+                onClick={copyLearnerLink}
+                className="w-full px-4 py-2.5 text-left text-sm hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-2.5"
+              >
+                {learnerLinkCopied ? (
+                  <Check className="w-4 h-4 text-green-500 shrink-0" />
+                ) : (
+                  <Link2 className="w-4 h-4 text-purple-500 shrink-0" />
+                )}
+                <div>
+                  <div className={learnerLinkCopied ? 'text-green-600 dark:text-green-400 font-semibold' : 'text-purple-600 dark:text-purple-400 font-semibold'}>
+                    {learnerLinkCopied ? 'Copied!' : 'Copy Learner Link'}
+                  </div>
+                  <div className="text-[11px] text-gray-400 dark:text-gray-500">
+                    Share with students — read-only view
                   </div>
                 </div>
               </button>
