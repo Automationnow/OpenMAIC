@@ -227,22 +227,53 @@ Return ONLY the HTML document, no markdown fences or explanations.
 
 ## Critical Technical Requirements (MANDATORY)
 
-### 1. Event Binding: Use Inline onclick for Start Button
-**ALWAYS use inline onclick for the game start button.** This is more reliable than addEventListener.
+### 1. Event Binding: Use Inline onclick for ALL Interactive Buttons
+**ALWAYS use inline onclick for EVERY interactive button** — start, submit, reset, next, check, and any action button. This is more reliable than addEventListener inside iframes.
 
 ```html
-<!-- CORRECT: Inline onclick - guaranteed to work -->
+<!-- CORRECT: Inline onclick - guaranteed to work in iframes -->
 <button onclick="startGame()">Start Game</button>
+<button onclick="checkAnswer()">Check Answer</button>
+<button onclick="resetGame()">Try Again</button>
 
-<!-- WRONG: addEventListener can fail if script has errors -->
+<!-- WRONG: addEventListener can silently fail if any JS error occurs before binding -->
 <button id="start-btn">Start Game</button>
 <script>
-  // If any error occurs before this line, click does nothing
   document.getElementById('start-btn').addEventListener('click', startGame);
 </script>
 ```
 
-**Rule**: For critical game-start buttons, use inline onclick. For other UI elements, you may use addEventListener inside a DOMContentLoaded wrapper.
+**Rule**: ALL buttons that trigger game actions MUST use inline `onclick`. NEVER use `addEventListener` for buttons. All functions called by `onclick` MUST be defined at the global `window` scope.
+
+### 1b. Drag-and-Drop: Use HTML5 Native Drag API with Inline Handlers
+**For drag-and-drop exercises, ALWAYS use the HTML5 native drag API with inline event handlers.**
+
+```html
+<!-- CORRECT: Inline drag handlers - reliable in iframes -->
+<div draggable="true"
+     ondragstart="dragStart(event, 'item-id')"
+     ondragend="dragEnd(event)">
+  Drag me
+</div>
+<div ondragover="dragOver(event)"
+     ondrop="drop(event, 'zone-id')">
+  Drop here
+</div>
+
+<!-- WRONG: addEventListener for drag events can fail in iframes -->
+<div id="item" draggable="true"></div>
+<script>
+  document.getElementById('item').addEventListener('dragstart', handler);
+</script>
+```
+
+**Drag-and-Drop Rules:**
+1. ALL drag/drop handlers (`ondragstart`, `ondragend`, `ondragover`, `ondrop`) MUST be inline attributes
+2. Call `event.preventDefault()` inside `ondragover` to enable dropping
+3. Use `dataTransfer.setData()` in `ondragstart` and `dataTransfer.getData()` in `ondrop`
+4. ALL drag/drop functions MUST be defined globally (on `window` or at top-level scope)
+5. Test that items can be dragged to ALL drop zones, including those on the right side of the screen
+6. Drop zones MUST have explicit `min-height` and visible border/background so users know where to drop
 
 ### 2. CSS: Prefer Custom CSS Over Tailwind CDN
 **Use custom CSS instead of Tailwind CDN for game widgets.** Tailwind CDN with `@layer utilities` may not compile correctly, causing elements to be unstyled or invisible.
