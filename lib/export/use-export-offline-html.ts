@@ -63,7 +63,13 @@ export function useExportOfflineHTML() {
     try {
       // 1. Read latest stage name from IndexedDB
       const freshStage = await db.stages.get(stage.id);
-      const latestName = freshStage?.name || stage.name;
+      const rawName = freshStage?.name || stage.name || '';
+      // Use first scene title as the display name — the raw stage name is the full prompt text
+      const sortedScenes = [...scenes].sort((a, b) => a.order - b.order);
+      const firstTitle = sortedScenes[0]?.title || '';
+      const latestName = firstTitle.length > 0 && firstTitle.length < 80
+        ? `Automation Now, LLC — CALE: ${firstTitle}`
+        : (rawName.length < 80 ? rawName : 'Automation Now, LLC — CALE Course');
 
       // 2. Collect agents
       const agentRecords = await getGeneratedAgentsByStageId(stage.id);

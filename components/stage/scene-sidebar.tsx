@@ -384,8 +384,8 @@ export function SceneSidebar({
                         )}
                       />
                     )}
-                    {/* Lock badge overlay on thumbnail */}
-                    {scene.locked && (
+                    {/* Lock badge overlay on thumbnail — hidden in learner mode */}
+                    {scene.locked && !isLearnerMode && (
                       <div className="absolute top-1 right-1 w-4 h-4 rounded bg-amber-500/90 flex items-center justify-center shadow-sm">
                         <Lock className="w-2.5 h-2.5 text-white" />
                       </div>
