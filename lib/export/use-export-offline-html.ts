@@ -314,7 +314,12 @@ export function useExportOfflineHTML() {
 
       // 9. Download the HTML file
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-      const safeName = latestName.replace(/[\\/:*?"<>|]/g, '_') || 'classroom';
+      // Use the first scene title for a clean filename, falling back to stage id
+      const firstSceneTitle = sceneData[0]?.title || '';
+      const courseLabel = firstSceneTitle.length > 0 && firstSceneTitle.length < 60
+        ? firstSceneTitle
+        : (stage.id ?? 'classroom');
+      const safeName = `AutomationNow_CALE_${courseLabel}`.replace(/[\\\/:*?"<>|\s]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
       saveAs(blob, `${safeName}_offline.html`);
 
       toast.success('Offline HTML exported successfully!', { id: toastId });
