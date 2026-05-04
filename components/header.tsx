@@ -274,7 +274,7 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
                 </div>
               </button>
             </div>
-          </div>
+          )}
         </div>
         )}
       </header>

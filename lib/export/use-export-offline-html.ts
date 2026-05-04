@@ -35,6 +35,7 @@ import { db, getGeneratedAgentsByStageId } from '@/lib/utils/database';
 import { collectAudioFiles } from './classroom-zip-utils';
 import type { SpeechAction } from '@/lib/types/action';
 import type { SlideContent } from '@/lib/types/stage';
+import type { Slide } from '@/lib/types/slides';
 import { createLogger } from '@/lib/logger';
 
 const log = createLogger('ExportOfflineHTML');
@@ -84,9 +85,17 @@ export function useExportOfflineHTML() {
         .slice()
         .sort((a, b) => a.order - b.order)
         .map((scene) => {
-          // Extract slide HTML canvas
+          // Extract slide canvas — Slide is a structured data object (elements/theme),
+          // not raw HTML. We render a summary card instead for the offline viewer.
           const slideContent = scene.type === 'slide' ? (scene.content as SlideContent) : null;
-          const canvasHtml = slideContent?.canvas?.html ?? '';
+          const slideCanvas: Slide | undefined = slideContent?.canvas;
+          // Build a simple text summary from slide elements for offline display
+          const canvasHtml = slideCanvas
+            ? `<div style="font-family:sans-serif;padding:16px;">
+                <p style="color:#64748b;font-size:12px;margin-bottom:8px;">Slide content — open in live session for full interactive view</p>
+                <p style="font-size:14px;color:#334155;">Elements: ${slideCanvas.elements?.length ?? 0} | Theme: ${slideCanvas.theme?.themeColors?.[0] ?? 'default'}</p>
+              </div>`
+            : '';
 
           // Extract speech scripts
           const speechScript = (scene.actions ?? [])
