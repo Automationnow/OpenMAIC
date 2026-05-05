@@ -58,5 +58,12 @@ export interface PlaybackEngineCallbacks {
   /** Get current playback speed multiplier (e.g. 1, 1.5, 2) */
   getPlaybackSpeed?: () => number;
 
+  /**
+   * Called when a lecture speech action has no pre-generated audio and the
+   * configured TTS provider is a server-side provider (not browser-native-tts).
+   * The caller should queue the text for synthesis via useDiscussionTTS.
+   */
+  onSpeechSegment?: (messageId: string, partId: string, text: string, agentId: string | null) => void;
+
   onComplete?: () => void;
 }

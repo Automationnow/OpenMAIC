@@ -362,6 +362,24 @@ export class PlaybackEngine {
     this.callbacks.onUserInterrupt?.(text);
   }
 
+  /**
+   * Called by the stage when a server-side TTS segment (lecture speech) has
+   * finished playing. This advances the engine to the next action.
+   * Only has effect when the engine is in 'playing' mode.
+   */
+  notifyServerTTSDone(): void {
+    if (this.speechTimer) {
+      // Cancel the reading-time fallback timer — TTS finished first
+      clearTimeout(this.speechTimer);
+      this.speechTimer = null;
+      this.speechTimerRemaining = 0;
+    }
+    this.callbacks.onSpeechEnd?.();
+    if (this.mode === 'playing') {
+      this.processNext();
+    }
+  }
+
   /** Whether all remaining actions have been consumed (no speech left to play) */
   isExhausted(): boolean {
     let si = this.sceneIndex;
@@ -494,7 +512,7 @@ export class PlaybackEngine {
           .play(speechAction.audioId || '', speechAction.audioUrl)
           .then((audioStarted) => {
             if (!audioStarted) {
-              // No pre-generated audio — try browser-native TTS if selected
+              // No pre-generated audio — try TTS based on configured provider
               const settings = useSettingsStore.getState();
               if (
                 settings.ttsEnabled &&
@@ -502,7 +520,28 @@ export class PlaybackEngine {
                 typeof window !== 'undefined' &&
                 window.speechSynthesis
               ) {
+                // Browser-native TTS: use Web Speech API directly
                 this.playBrowserTTS(speechAction);
+              } else if (
+                settings.ttsEnabled &&
+                settings.ttsProviderId !== 'browser-native-tts' &&
+                this.callbacks.onSpeechSegment
+              ) {
+                // Server-side TTS (e.g. Mistral, OpenAI, ElevenLabs):
+                // Delegate to useDiscussionTTS via the onSpeechSegment callback.
+                // The teacher agent id is null — resolveVoiceForAgent uses globalTtsProviderId.
+                const partId = speechAction.audioId || `lecture-${Date.now()}`;
+                this.callbacks.onSpeechSegment(
+                  `lecture-msg-${partId}`,
+                  partId,
+                  speechAction.text,
+                  null, // teacher agent — resolved via global TTS settings
+                );
+                // Engine will advance when notifyServerTTSDone() is called by the
+                // stage after the TTS audio finishes playing. The reading-time timer
+                // is intentionally NOT scheduled here to avoid double-advancing.
+                // If TTS fails, the error handler in useDiscussionTTS fires
+                // onSegmentComplete which calls notifyServerTTSDone.
               } else {
                 scheduleReadingTimer();
               }

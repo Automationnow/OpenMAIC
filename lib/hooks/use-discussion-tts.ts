@@ -16,6 +16,8 @@ interface DiscussionTTSOptions {
   enabled: boolean;
   agents: AgentConfig[];
   onAudioStateChange?: (agentId: string | null, state: AudioIndicatorState) => void;
+  /** Called when a queued segment finishes playing (used by lecture engine to advance) */
+  onSegmentComplete?: (messageId: string) => void;
 }
 
 interface QueueItem {
@@ -28,7 +30,7 @@ interface QueueItem {
   voiceId: string;
 }
 
-export function useDiscussionTTS({ enabled, agents, onAudioStateChange }: DiscussionTTSOptions) {
+export function useDiscussionTTS({ enabled, agents, onAudioStateChange, onSegmentComplete }: DiscussionTTSOptions) {
   const ttsProvidersConfig = useSettingsStore((s) => s.ttsProvidersConfig);
   const ttsSpeed = useSettingsStore((s) => s.ttsSpeed);
   const ttsMuted = useSettingsStore((s) => s.ttsMuted);
@@ -48,6 +50,8 @@ export function useDiscussionTTS({ enabled, agents, onAudioStateChange }: Discus
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const onAudioStateChangeRef = useRef(onAudioStateChange);
   onAudioStateChangeRef.current = onAudioStateChange;
+  const onSegmentCompleteRef = useRef(onSegmentComplete);
+  onSegmentCompleteRef.current = onSegmentComplete;
   const processQueueRef = useRef<() => void>(() => {});
 
   const {
@@ -88,13 +92,13 @@ export function useDiscussionTTS({ enabled, agents, onAudioStateChange }: Discus
     (agentId: string | null): ResolvedVoice => {
       const providers = getAvailableProvidersWithVoices(ttsProvidersConfig);
       if (!agentId) {
-        if (providers.length > 0) {
-          return {
-            providerId: providers[0].providerId,
-            voiceId: providers[0].voices[0]?.id ?? 'default',
-          };
-        }
-        return { providerId: 'browser-native-tts', voiceId: 'default' };
+        // null agentId = lecture/teacher narration — always use global lecture voice
+        // (same source of truth as the Settings panel TTS provider + voice selection)
+        return {
+          providerId: globalTtsProviderId,
+          voiceId: globalTtsVoice,
+          modelId: ttsProvidersConfig[globalTtsProviderId]?.modelId,
+        };
       }
       const agent = agents.find((a) => a.id === agentId);
       if (!agent) {
@@ -182,6 +186,7 @@ export function useDiscussionTTS({ enabled, agents, onAudioStateChange }: Discus
         isPlayingRef.current = false;
         segmentDoneCounterRef.current++;
         onAudioStateChangeRef.current?.(item.agentId, 'idle');
+        onSegmentCompleteRef.current?.(item.messageId);
         if (!pausedRef.current) {
           queueMicrotask(() => processQueueRef.current());
         }
@@ -191,6 +196,7 @@ export function useDiscussionTTS({ enabled, agents, onAudioStateChange }: Discus
         isPlayingRef.current = false;
         segmentDoneCounterRef.current++;
         onAudioStateChangeRef.current?.(item.agentId, 'idle');
+        onSegmentCompleteRef.current?.(item.messageId);
         if (!pausedRef.current) {
           queueMicrotask(() => processQueueRef.current());
         }

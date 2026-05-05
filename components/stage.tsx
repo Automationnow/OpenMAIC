@@ -142,6 +142,11 @@ export function Stage({
       setAudioAgentId(agentId);
       setAudioIndicatorState(state);
     },
+    onSegmentComplete: (_messageId) => {
+      // Notify the lecture engine that a server-side TTS segment has finished
+      // playing so it can advance to the next action.
+      engineRef.current?.notifyServerTTSDone();
+    },
   });
 
   // Pick a student agent for discussion trigger (prioritize student > non-teacher > fallback)
@@ -163,6 +168,9 @@ export function Stage({
 
   const engineRef = useRef<PlaybackEngine | null>(null);
   const audioPlayerRef = useRef(createAudioPlayer());
+  // Stable ref to the latest handleSegmentSealed so the engine callback is never stale
+  const handleSegmentSealedRef = useRef(discussionTTS.handleSegmentSealed);
+  handleSegmentSealedRef.current = discussionTTS.handleSegmentSealed;
   const chatAreaRef = useRef<ChatAreaRef>(null);
   const lectureSessionIdRef = useRef<string | null>(null);
   const lectureActionCounterRef = useRef(0);
@@ -490,6 +498,14 @@ export function Stage({
         return ids.includes(agentId);
       },
       getPlaybackSpeed: () => useSettingsStore.getState().playbackSpeed || 1,
+      onSpeechSegment: (messageId, partId, text, agentId) => {
+        // Delegate lecture speech to server-side TTS (e.g. Mistral).
+        // Use the stable ref so we always call the latest version of the callback
+        // even if the engine closure was created before settings changed.
+        // When audio finishes, useDiscussionTTS fires onSegmentComplete
+        // which calls engineRef.current?.notifyServerTTSDone().
+        handleSegmentSealedRef.current(messageId, partId, text, agentId);
+      },
       onComplete: () => {
         // lectureSpeech intentionally NOT cleared — last sentence stays visible
         // until scene transition (auto-play) or user restarts. Scene change
