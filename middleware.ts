@@ -42,12 +42,26 @@ async function verifyToken(token: string, accessCode: string): Promise<boolean> 
 }
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // On the learner domain (learn.automationnow.org), classroom URLs without
+  // ?mode=learner should always redirect to the learner view so students
+  // never accidentally see instructor controls.
+  const host = request.headers.get('host') || request.nextUrl.hostname;
+  const isLearnerDomain = host === 'learn.automationnow.org';
+  const isClassroomPath = /^\/classroom\/[^/]+$/.test(pathname);
+  const hasLearnerMode = request.nextUrl.searchParams.get('mode') === 'learner';
+
+  if (isLearnerDomain && isClassroomPath && !hasLearnerMode) {
+    const url = request.nextUrl.clone();
+    url.searchParams.set('mode', 'learner');
+    return NextResponse.redirect(url);
+  }
+
   const accessCode = process.env.ACCESS_CODE;
   if (!accessCode) {
     return NextResponse.next();
   }
-
-  const { pathname } = request.nextUrl;
 
   // Whitelist: access-code endpoints, health check
   if (pathname.startsWith('/api/access-code/') || pathname === '/api/health') {

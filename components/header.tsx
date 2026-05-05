@@ -86,6 +86,10 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
     failedOutlines.length === 0 &&
     Object.values(mediaTasks).every((task) => task.status === 'done' || task.status === 'failed');
 
+  // Copy Learner Link is always available as long as there are scenes —
+  // it does not depend on media task completion.
+  const canShareLearnerLink = scenes.length > 0 && generatingOutlines.length === 0;
+
   const isAnyExporting = isExporting || isExportingZip;
 
   const themeRef = useRef<HTMLDivElement>(null);
@@ -220,11 +224,13 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
         <div className="relative" ref={exportRef}>
           <button
             onClick={() => {
-              if (canExport && !isAnyExporting) setExportMenuOpen(!exportMenuOpen);
+              // Allow opening the dropdown if either full export is ready OR
+              // the learner link is available (scenes exist, not generating)
+              if ((canExport || canShareLearnerLink) && !isAnyExporting) setExportMenuOpen(!exportMenuOpen);
             }}
-            disabled={!canExport || isAnyExporting}
+            disabled={!canExport && !canShareLearnerLink || isAnyExporting}
             title={
-              canExport
+              canExport || canShareLearnerLink
                 ? isAnyExporting
                   ? t('export.exporting')
                   : t('export.pptx')
@@ -232,7 +238,7 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
             }
             className={cn(
               'shrink-0 p-2 rounded-full transition-all',
-              canExport && !isAnyExporting
+              (canExport || canShareLearnerLink) && !isAnyExporting
                 ? 'text-gray-400 dark:text-gray-500 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-gray-200 hover:shadow-sm'
                 : 'text-gray-300 dark:text-gray-600 cursor-not-allowed opacity-50',
             )}
