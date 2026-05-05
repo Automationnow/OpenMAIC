@@ -49,7 +49,7 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
   const pathname = usePathname();
 
   const copyLearnerLink = useCallback(() => {
-    const learnerUrl = `${window.location.origin}${pathname}?mode=learner`;
+    const learnerUrl = `https://learn.automationnow.org${pathname}?mode=learner`;
     navigator.clipboard.writeText(learnerUrl).then(() => {
       setLearnerLinkCopied(true);
       setTimeout(() => setLearnerLinkCopied(false), 2500);
