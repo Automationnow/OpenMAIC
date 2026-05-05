@@ -11,7 +11,6 @@ import {
   FileDown,
   Package,
   Archive,
-  Globe,
   Link2,
   Check,
 } from 'lucide-react';
@@ -27,7 +26,6 @@ import { useStageStore } from '@/lib/store/stage';
 import { useMediaGenerationStore } from '@/lib/store/media-generation';
 import { useExportPPTX } from '@/lib/export/use-export-pptx';
 import { useExportClassroom } from '@/lib/export/use-export-classroom';
-import { useExportOfflineHTML } from '@/lib/export/use-export-offline-html';
 
 interface HeaderProps {
   readonly currentSceneTitle: string;
@@ -45,7 +43,6 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
   // Export
   const { exporting: isExporting, exportPPTX, exportResourcePack } = useExportPPTX();
   const { exporting: isExportingZip, exportClassroomZip } = useExportClassroom();
-  const { exporting: isExportingOfflineHTML, exportOfflineHTML } = useExportOfflineHTML();
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [learnerLinkCopied, setLearnerLinkCopied] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
@@ -70,7 +67,7 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
     failedOutlines.length === 0 &&
     Object.values(mediaTasks).every((task) => task.status === 'done' || task.status === 'failed');
 
-  const isAnyExporting = isExporting || isExportingZip || isExportingOfflineHTML;
+  const isAnyExporting = isExporting || isExportingZip;
 
   const themeRef = useRef<HTMLDivElement>(null);
 
@@ -270,23 +267,7 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
                   </div>
                 </div>
               </button>
-              {/* Offline HTML export */}
-              <button
-                onClick={() => {
-                  setExportMenuOpen(false);
-                  exportOfflineHTML();
-                }}
-                disabled={isExportingOfflineHTML}
-                className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2.5"
-              >
-                <Globe className="w-4 h-4 text-gray-400 shrink-0" />
-                <div>
-                  <div>Offline HTML</div>
-                  <div className="text-[11px] text-gray-400 dark:text-gray-500">
-                    Single file, opens without internet
-                  </div>
-                </div>
-              </button>
+              {/* Offline HTML export removed — live Learner Link preferred */}
               {/* Copy Learner Link */}
               <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
               <button
