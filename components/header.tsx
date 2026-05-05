@@ -13,6 +13,8 @@ import {
   Archive,
   Link2,
   Check,
+  Send,
+  X,
 } from 'lucide-react';
 import { useI18n } from '@/lib/hooks/use-i18n';
 import { useTheme } from '@/lib/hooks/use-theme';
@@ -46,9 +48,76 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [learnerLinkCopied, setLearnerLinkCopied] = useState(false);
   const [learnerLinkSaving, setLearnerLinkSaving] = useState(false);
+  const [publishModalOpen, setPublishModalOpen] = useState(false);
+  const [publishedUrl, setPublishedUrl] = useState('');
+  const [publishUrlCopied, setPublishUrlCopied] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const stage = useStageStore((s) => s.stage);
+
+  // Standalone publish function — saves session to server and shows URL in modal.
+  // Does NOT use clipboard API, so it works regardless of browser permissions.
+  const publishSession = useCallback(async () => {
+    setLearnerLinkSaving(true);
+    const learnerUrl = `https://learn.automationnow.org${pathname}?mode=learner`;
+    try {
+      const { scenes: currentScenes } = useStageStore.getState();
+      if (stage && currentScenes.length > 0) {
+        const { useAgentRegistry } = await import('@/lib/orchestration/registry/store');
+        const registry = useAgentRegistry.getState();
+        const agentIds = stage.agentIds || [];
+        const generatedAgentConfigs = registry
+          .listAgents()
+          .filter((a) => a.isGenerated && (agentIds.includes(a.id) || a.boundStageId === stage.id))
+          .map((a) => ({
+            id: a.id,
+            name: a.name,
+            role: a.role,
+            persona: a.persona,
+            avatar: a.avatar,
+            color: a.color,
+            priority: a.priority,
+            ...(a.voiceConfig ? { voiceConfig: a.voiceConfig } : {}),
+          }));
+        const stageWithAgents = {
+          ...stage,
+          ...(generatedAgentConfigs.length > 0 ? { generatedAgentConfigs } : {}),
+        };
+        await fetch('https://learn.automationnow.org/api/classroom', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage: stageWithAgents, scenes: currentScenes }),
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to publish session:', err);
+    } finally {
+      setLearnerLinkSaving(false);
+    }
+    setPublishedUrl(learnerUrl);
+    setPublishModalOpen(true);
+  }, [pathname, stage]);
+
+  const copyPublishedUrl = useCallback(() => {
+    if (!publishedUrl) return;
+    try {
+      navigator.clipboard.writeText(publishedUrl);
+      setPublishUrlCopied(true);
+      setTimeout(() => setPublishUrlCopied(false), 2500);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = publishedUrl;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      setPublishUrlCopied(true);
+      setTimeout(() => setPublishUrlCopied(false), 2500);
+    }
+  }, [publishedUrl]);
 
   const copyLearnerLink = useCallback(async () => {
     // IMPORTANT: Build the URL and attempt clipboard write FIRST, while the
@@ -271,6 +340,23 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
           )}
         </div>
 
+        {/* Publish to Learner Button — standalone, no clipboard needed */}
+        {!isLearnerMode && canShareLearnerLink && (
+          <button
+            onClick={publishSession}
+            disabled={learnerLinkSaving}
+            className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
+            title="Save session to server and get the Learner URL"
+          >
+            {learnerLinkSaving ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Send className="w-4 h-4" />
+            )}
+            {learnerLinkSaving ? 'Publishing...' : 'Publish'}
+          </button>
+        )}
+
         {/* Export Dropdown — hidden in learner mode */}
         {!isLearnerMode && (
         <div className="relative" ref={exportRef}>
@@ -374,6 +460,44 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
         )}
       </header>
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+
+      {/* Publish Modal — shows the learner URL after server save */}
+      {publishModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 max-w-lg w-full mx-4 border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Session Published ✓</h2>
+              <button
+                onClick={() => { setPublishModalOpen(false); setPublishUrlCopied(false); }}
+                className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              Your session (including agent voices) has been saved to the server. Share this link with your students:
+            </p>
+            <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 mb-4">
+              <input
+                readOnly
+                value={publishedUrl}
+                className="flex-1 bg-transparent text-sm text-purple-600 dark:text-purple-400 font-mono outline-none select-all"
+                onClick={(e) => (e.target as HTMLInputElement).select()}
+              />
+              <button
+                onClick={copyPublishedUrl}
+                className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold transition-colors"
+              >
+                {publishUrlCopied ? <Check className="w-3.5 h-3.5" /> : <Link2 className="w-3.5 h-3.5" />}
+                {publishUrlCopied ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              Students will see the course in read-only learner mode with no instructor controls.
+            </p>
+          </div>
+        </div>
+      )}
     </>
   );
 }
