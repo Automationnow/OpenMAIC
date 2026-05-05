@@ -51,15 +51,41 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
   const stage = useStageStore((s) => s.stage);
 
   const copyLearnerLink = useCallback(async () => {
+    // IMPORTANT: Build the URL and attempt clipboard write FIRST, while the
+    // user-gesture context is still active (Chrome requires this for clipboard API).
+    const learnerUrl = `https://learn.automationnow.org${pathname}?mode=learner`;
+
+    // Try clipboard write immediately — before any async work or state changes
+    // that could break the user-gesture context.
+    let clipboardOk = false;
+    try {
+      await navigator.clipboard.writeText(learnerUrl);
+      clipboardOk = true;
+    } catch {
+      // Fallback: use legacy execCommand which doesn't need clipboard permission
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = learnerUrl;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        clipboardOk = document.execCommand('copy');
+        document.body.removeChild(ta);
+      } catch {
+        clipboardOk = false;
+      }
+    }
+
+    // Now close the dropdown and show the saving spinner
     setExportMenuOpen(false);
     setLearnerLinkSaving(true);
+
+    // Persist session to server so it loads on any domain/device
     try {
-      // Persist current session to server-side storage so it loads on any domain/device.
-      // Always POST to learn.automationnow.org so the save and load hit the same server instance.
       const { scenes: currentScenes } = useStageStore.getState();
       if (stage && currentScenes.length > 0) {
-        // Collect full agent configs (including voiceConfig) from the registry so
-        // the learner domain can hydrate Kim's voice and other agent settings.
         const { useAgentRegistry } = await import('@/lib/orchestration/registry/store');
         const registry = useAgentRegistry.getState();
         const agentIds = stage.agentIds || [];
@@ -76,12 +102,10 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
             priority: a.priority,
             ...(a.voiceConfig ? { voiceConfig: a.voiceConfig } : {}),
           }));
-
         const stageWithAgents = {
           ...stage,
           ...(generatedAgentConfigs.length > 0 ? { generatedAgentConfigs } : {}),
         };
-
         await fetch('https://learn.automationnow.org/api/classroom', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -93,11 +117,15 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
     } finally {
       setLearnerLinkSaving(false);
     }
-    const learnerUrl = `https://learn.automationnow.org${pathname}?mode=learner`;
-    navigator.clipboard.writeText(learnerUrl).then(() => {
+
+    // Show confirmation or fallback prompt
+    if (clipboardOk) {
       setLearnerLinkCopied(true);
       setTimeout(() => setLearnerLinkCopied(false), 2500);
-    });
+    } else {
+      // Last resort: show the URL so user can copy manually
+      window.prompt('Copy this learner link:', learnerUrl);
+    }
   }, [pathname, stage]);
   const scenes = useStageStore((s) => s.scenes);
   const generatingOutlines = useStageStore((s) => s.generatingOutlines);
