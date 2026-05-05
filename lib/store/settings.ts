@@ -320,6 +320,7 @@ const getDefaultAudioConfig = () => ({
     'doubao-tts': { apiKey: '', baseUrl: '', enabled: false },
     'elevenlabs-tts': { apiKey: '', baseUrl: '', enabled: false },
     'minimax-tts': { apiKey: '', baseUrl: '', modelId: 'speech-2.8-hd', enabled: false },
+    'mistral-tts': { apiKey: '', baseUrl: '', enabled: false },
     'browser-native-tts': { apiKey: '', baseUrl: '', enabled: true },
   } as Record<
     TTSProviderId,
