@@ -54,10 +54,11 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
     setExportMenuOpen(false);
     setLearnerLinkSaving(true);
     try {
-      // Persist current session to server-side storage so it loads on any domain/device
+      // Persist current session to server-side storage so it loads on any domain/device.
+      // Always POST to learn.automationnow.org so the save and load hit the same server instance.
       const { scenes: currentScenes } = useStageStore.getState();
       if (stage && currentScenes.length > 0) {
-        await fetch('/api/classroom', {
+        await fetch('https://learn.automationnow.org/api/classroom', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ stage, scenes: currentScenes }),

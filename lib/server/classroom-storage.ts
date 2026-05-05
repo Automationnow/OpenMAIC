@@ -3,8 +3,19 @@ import path from 'path';
 import type { NextRequest } from 'next/server';
 import type { Scene, Stage } from '@/lib/types/stage';
 
-export const CLASSROOMS_DIR = path.join(process.cwd(), 'data', 'classrooms');
-export const CLASSROOM_JOBS_DIR = path.join(process.cwd(), 'data', 'classroom-jobs');
+// On Vercel serverless, process.cwd() resolves to /var/task which is read-only.
+// Use /tmp (always writable) when the default path is not writable.
+function resolveWritableDir(subPath: string): string {
+  const cwdPath = path.join(process.cwd(), subPath);
+  // Vercel serverless: /var/task is read-only; /tmp is the only writable directory
+  if (process.env.VERCEL || cwdPath.startsWith('/var/task')) {
+    return path.join('/tmp', subPath);
+  }
+  return cwdPath;
+}
+
+export const CLASSROOMS_DIR = resolveWritableDir('data/classrooms');
+export const CLASSROOM_JOBS_DIR = resolveWritableDir('data/classroom-jobs');
 
 async function ensureDir(dir: string) {
   await fs.mkdir(dir, { recursive: true });
