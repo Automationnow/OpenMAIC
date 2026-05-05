@@ -49,17 +49,12 @@ export async function readClassroom(id: string): Promise<PersistedClassroomData 
       // List blobs to find the one matching this id
       const { blobs } = await blob.list({ prefix: `classrooms/${id}.json`, token: process.env.BLOB_READ_WRITE_TOKEN });
       if (blobs.length === 0) return null;
-      // Use blob.download for private blobs (requires token)
-      const { body } = await blob.download(blobs[0].url, { token: process.env.BLOB_READ_WRITE_TOKEN });
-      if (!body) return null;
-      const chunks: Uint8Array[] = [];
-      const reader = (body as ReadableStream<Uint8Array>).getReader();
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        if (value) chunks.push(value);
-      }
-      const text = Buffer.concat(chunks.map(c => Buffer.from(c))).toString('utf-8');
+      // Fetch private blob content using Authorization header
+      const response = await fetch(blobs[0].url, {
+        headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
+      });
+      if (!response.ok) return null;
+      const text = await response.text();
       return JSON.parse(text) as PersistedClassroomData;
     } catch {
       return null;
