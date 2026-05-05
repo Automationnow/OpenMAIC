@@ -554,13 +554,38 @@ export function useSceneGenerator(options: UseSceneGeneratorOptions = {}) {
     async (sceneId: string) => {
       const state = store.getState();
       const scene = state.scenes.find((s) => s.id === sceneId);
-      const params = lastParamsRef.current;
-      if (!scene || !state.stage || !params) return;
+      if (!scene || !state.stage) return;
       if (scene.locked) return; // locked — refuse silently
 
       // Find the matching outline by order
       const outline = state.outlines.find((o) => o.order === scene.order);
       if (!outline) return;
+
+      // Reconstruct params from persisted stage data when lastParamsRef is null
+      // (e.g. after a page refresh — sessionStorage is cleared but IndexedDB is not)
+      let params = lastParamsRef.current;
+      if (!params) {
+        const { useAgentRegistry } = await import('@/lib/orchestration/registry/store');
+        const { useSettingsStore } = await import('@/lib/store/settings');
+        const registry = useAgentRegistry.getState();
+        const selectedIds = useSettingsStore.getState().selectedAgentIds || [];
+        const reconstructedAgents: import('@/lib/generation/pipeline-types').AgentInfo[] = selectedIds
+          .map((id) => registry.getAgent(id))
+          .filter((a): a is NonNullable<typeof a> => a != null)
+          .map((a) => ({ id: a.id, name: a.name, role: a.role, persona: a.persona }));
+        params = {
+          stageInfo: {
+            name: state.stage.name || '',
+            description: state.stage.description,
+            style: state.stage.style,
+            language: state.stage.languageDirective,
+          },
+          agents: reconstructedAgents.length > 0 ? reconstructedAgents : undefined,
+          languageDirective: state.stage.languageDirective,
+        };
+        // Cache for subsequent calls in this session
+        lastParamsRef.current = params;
+      }
 
       const abortController = new AbortController();
       const signal = abortController.signal;
