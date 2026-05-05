@@ -108,11 +108,18 @@ export default function CompliancePage() {
               detail="All data in transit is encrypted using TLS 1.3. Certificates auto-renewed via Let's Encrypt."
             />
             <InfraCard
-              title="AI Provider"
+              title="AI Provider — Content"
               value="OpenAI"
-              detail="GPT-4 class models via OpenAI API. Data is not used to train OpenAI models under the API data usage policy."
+              detail="GPT-4 class models via OpenAI API for course content generation. Data is not used to train OpenAI models under the API data usage policy."
               link="https://openai.com/policies/api-data-usage-policies"
               linkText="OpenAI API Policy"
+            />
+            <InfraCard
+              title="AI Provider — Voice (TTS)"
+              value="Mistral AI"
+              detail="Mistral AI API powers Kim's voice narration (text-to-speech) for lecture playback. Audio is generated on-demand and not stored. Data is not used to train Mistral models under the API usage policy."
+              link="https://mistral.ai/terms/"
+              linkText="Mistral AI Terms"
             />
             <InfraCard
               title="Authentication"
@@ -206,7 +213,7 @@ export default function CompliancePage() {
             <span>SAM.gov UEI: 1WYM2 &nbsp;|&nbsp; CAGE: KESEQWKHCDJ3</span>
           </p>
           <p className="mt-2 text-xs text-gray-400">
-            Hosted on Vercel (SOC 2 Type II) &nbsp;·&nbsp; AI powered by OpenAI &nbsp;·&nbsp;
+            Hosted on Vercel (SOC 2 Type II) &nbsp;·&nbsp; Content AI: OpenAI &nbsp;·&nbsp; Voice AI: Mistral AI &nbsp;·&nbsp;
             Platform domain: learn.automationnow.org
           </p>
         </footer>
