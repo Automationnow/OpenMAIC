@@ -111,8 +111,8 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
     Object.values(mediaTasks).every((task) => task.status === 'done' || task.status === 'failed');
 
   // Copy Learner Link is always available as long as there are scenes —
-  // it does not depend on media task completion.
-  const canShareLearnerLink = scenes.length > 0 && generatingOutlines.length === 0;
+  // it does not depend on media task completion or outline generation state.
+  const canShareLearnerLink = scenes.length > 0;
 
   const isAnyExporting = isExporting || isExportingZip;
 
