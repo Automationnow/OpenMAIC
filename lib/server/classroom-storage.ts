@@ -1,49 +1,26 @@
-import { promises as fs } from 'fs';
-import path from 'path';
 import type { NextRequest } from 'next/server';
 import type { Scene, Stage } from '@/lib/types/stage';
 
-// On Vercel serverless, process.cwd() resolves to /var/task which is read-only.
-// Use /tmp (always writable) when the default path is not writable.
-function resolveWritableDir(subPath: string): string {
-  const cwdPath = path.join(process.cwd(), subPath);
-  // Vercel serverless: /var/task is read-only; /tmp is the only writable directory
-  if (process.env.VERCEL || cwdPath.startsWith('/var/task')) {
-    return path.join('/tmp', subPath);
+// ---------------------------------------------------------------------------
+// Vercel Blob storage for persistent classroom sessions.
+// Falls back to in-memory cache for local development (no BLOB_READ_WRITE_TOKEN).
+// ---------------------------------------------------------------------------
+
+// Lazy-load @vercel/blob only when the token is present to avoid import errors
+// in local dev environments that don't have the package configured.
+async function getBlobClient() {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!token) return null;
+  try {
+    const blob = await import('@vercel/blob');
+    return blob;
+  } catch {
+    return null;
   }
-  return cwdPath;
 }
 
-export const CLASSROOMS_DIR = resolveWritableDir('data/classrooms');
-export const CLASSROOM_JOBS_DIR = resolveWritableDir('data/classroom-jobs');
-
-async function ensureDir(dir: string) {
-  await fs.mkdir(dir, { recursive: true });
-}
-
-export async function ensureClassroomsDir() {
-  await ensureDir(CLASSROOMS_DIR);
-}
-
-export async function ensureClassroomJobsDir() {
-  await ensureDir(CLASSROOM_JOBS_DIR);
-}
-
-export async function writeJsonFileAtomic(filePath: string, data: unknown) {
-  const dir = path.dirname(filePath);
-  await ensureDir(dir);
-
-  const tempFilePath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
-  const content = JSON.stringify(data, null, 2);
-  await fs.writeFile(tempFilePath, content, 'utf-8');
-  await fs.rename(tempFilePath, filePath);
-}
-
-export function buildRequestOrigin(req: NextRequest): string {
-  return req.headers.get('x-forwarded-host')
-    ? `${req.headers.get('x-forwarded-proto') || 'http'}://${req.headers.get('x-forwarded-host')}`
-    : req.nextUrl.origin;
-}
+// In-memory fallback for local development
+const memoryStore = new Map<string, PersistedClassroomData>();
 
 export interface PersistedClassroomData {
   id: string;
@@ -56,17 +33,32 @@ export function isValidClassroomId(id: string): boolean {
   return /^[a-zA-Z0-9_-]+$/.test(id);
 }
 
+export function buildRequestOrigin(req: NextRequest): string {
+  return req.headers.get('x-forwarded-host')
+    ? `${req.headers.get('x-forwarded-proto') || 'http'}://${req.headers.get('x-forwarded-host')}`
+    : req.nextUrl.origin;
+}
+
 export async function readClassroom(id: string): Promise<PersistedClassroomData | null> {
-  const filePath = path.join(CLASSROOMS_DIR, `${id}.json`);
-  try {
-    const content = await fs.readFile(filePath, 'utf-8');
-    return JSON.parse(content) as PersistedClassroomData;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+  const blob = await getBlobClient();
+
+  if (blob) {
+    // Vercel Blob: fetch the stored JSON by its well-known path
+    try {
+      const blobUrl = `${process.env.BLOB_BASE_URL || ''}/classrooms/${id}.json`;
+      // List blobs to find the one matching this id
+      const { blobs } = await blob.list({ prefix: `classrooms/${id}.json`, token: process.env.BLOB_READ_WRITE_TOKEN });
+      if (blobs.length === 0) return null;
+      const response = await fetch(blobs[0].url);
+      if (!response.ok) return null;
+      return (await response.json()) as PersistedClassroomData;
+    } catch {
       return null;
     }
-    throw error;
   }
+
+  // Local dev fallback
+  return memoryStore.get(id) ?? null;
 }
 
 export async function persistClassroom(
@@ -84,12 +76,31 @@ export async function persistClassroom(
     createdAt: new Date().toISOString(),
   };
 
-  await ensureClassroomsDir();
-  const filePath = path.join(CLASSROOMS_DIR, `${data.id}.json`);
-  await writeJsonFileAtomic(filePath, classroomData);
+  const blob = await getBlobClient();
+
+  if (blob) {
+    // Vercel Blob: store as JSON blob with a deterministic path
+    const content = JSON.stringify(classroomData);
+    await blob.put(`classrooms/${data.id}.json`, content, {
+      access: 'public', // public so we can fetch it without auth in readClassroom
+      contentType: 'application/json',
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+      addRandomSuffix: false, // deterministic URL so we can overwrite on re-publish
+    });
+  } else {
+    // Local dev fallback
+    memoryStore.set(data.id, classroomData);
+  }
 
   return {
     ...classroomData,
     url: `${baseUrl}/classroom/${data.id}`,
   };
 }
+
+// Legacy exports kept for compatibility with any code that still imports these
+export const CLASSROOMS_DIR = '/tmp/data/classrooms';
+export const CLASSROOM_JOBS_DIR = '/tmp/data/classroom-jobs';
+export async function ensureClassroomsDir() {}
+export async function ensureClassroomJobsDir() {}
+export async function writeJsonFileAtomic(_filePath: string, _data: unknown) {}
