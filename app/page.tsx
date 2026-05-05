@@ -472,6 +472,21 @@ function HomePage() {
           className="h-12 md:h-16 mb-2 -ml-2 md:-ml-3"
         />
 
+        {/* ── Automation Now Branding ── */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="flex items-center gap-2 mb-3"
+        >
+          <img
+            src="/automation-now-logo-full.png"
+            alt="Automation Now, LLC"
+            className="h-7 w-7 object-contain"
+          />
+          <span className="text-xs font-medium text-muted-foreground/60">by Automation Now, LLC &mdash; &ldquo;The future is Here.&rdquo;</span>
+        </motion.div>
+
         {/* ── Slogan ── */}
         <motion.p
           initial={{ opacity: 0 }}
