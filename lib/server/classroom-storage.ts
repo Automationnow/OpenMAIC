@@ -49,9 +49,18 @@ export async function readClassroom(id: string): Promise<PersistedClassroomData 
       // List blobs to find the one matching this id
       const { blobs } = await blob.list({ prefix: `classrooms/${id}.json`, token: process.env.BLOB_READ_WRITE_TOKEN });
       if (blobs.length === 0) return null;
-      const response = await fetch(blobs[0].url);
-      if (!response.ok) return null;
-      return (await response.json()) as PersistedClassroomData;
+      // Use blob.download for private blobs (requires token)
+      const { body } = await blob.download(blobs[0].url, { token: process.env.BLOB_READ_WRITE_TOKEN });
+      if (!body) return null;
+      const chunks: Uint8Array[] = [];
+      const reader = (body as ReadableStream<Uint8Array>).getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value) chunks.push(value);
+      }
+      const text = Buffer.concat(chunks.map(c => Buffer.from(c))).toString('utf-8');
+      return JSON.parse(text) as PersistedClassroomData;
     } catch {
       return null;
     }
@@ -82,7 +91,7 @@ export async function persistClassroom(
     // Vercel Blob: store as JSON blob with a deterministic path
     const content = JSON.stringify(classroomData);
     await blob.put(`classrooms/${data.id}.json`, content, {
-      access: 'public', // public so we can fetch it without auth in readClassroom
+      access: 'private',
       contentType: 'application/json',
       token: process.env.BLOB_READ_WRITE_TOKEN,
       addRandomSuffix: false, // deterministic URL so we can overwrite on re-publish
