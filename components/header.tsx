@@ -45,17 +45,35 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
   const { exporting: isExportingZip, exportClassroomZip } = useExportClassroom();
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [learnerLinkCopied, setLearnerLinkCopied] = useState(false);
+  const [learnerLinkSaving, setLearnerLinkSaving] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const stage = useStageStore((s) => s.stage);
 
-  const copyLearnerLink = useCallback(() => {
+  const copyLearnerLink = useCallback(async () => {
+    setExportMenuOpen(false);
+    setLearnerLinkSaving(true);
+    try {
+      // Persist current session to server-side storage so it loads on any domain/device
+      const { scenes: currentScenes } = useStageStore.getState();
+      if (stage && currentScenes.length > 0) {
+        await fetch('/api/classroom', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage, scenes: currentScenes }),
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to persist classroom for learner link:', err);
+    } finally {
+      setLearnerLinkSaving(false);
+    }
     const learnerUrl = `https://learn.automationnow.org${pathname}?mode=learner`;
     navigator.clipboard.writeText(learnerUrl).then(() => {
       setLearnerLinkCopied(true);
       setTimeout(() => setLearnerLinkCopied(false), 2500);
     });
-    setExportMenuOpen(false);
-  }, [pathname]);
+  }, [pathname, stage]);
   const scenes = useStageStore((s) => s.scenes);
   const generatingOutlines = useStageStore((s) => s.generatingOutlines);
   const failedOutlines = useStageStore((s) => s.failedOutlines);
@@ -272,16 +290,19 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
               <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
               <button
                 onClick={copyLearnerLink}
-                className="w-full px-4 py-2.5 text-left text-sm hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-2.5"
+                disabled={learnerLinkSaving}
+                className="w-full px-4 py-2.5 text-left text-sm hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-2.5 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {learnerLinkCopied ? (
                   <Check className="w-4 h-4 text-green-500 shrink-0" />
+                ) : learnerLinkSaving ? (
+                  <Loader2 className="w-4 h-4 text-purple-500 shrink-0 animate-spin" />
                 ) : (
                   <Link2 className="w-4 h-4 text-purple-500 shrink-0" />
                 )}
                 <div>
                   <div className={learnerLinkCopied ? 'text-green-600 dark:text-green-400 font-semibold' : 'text-purple-600 dark:text-purple-400 font-semibold'}>
-                    {learnerLinkCopied ? 'Copied!' : 'Copy Learner Link'}
+                    {learnerLinkCopied ? 'Copied!' : learnerLinkSaving ? 'Saving session...' : 'Copy Learner Link'}
                   </div>
                   <div className="text-[11px] text-gray-400 dark:text-gray-500">
                     Share with students — read-only view
