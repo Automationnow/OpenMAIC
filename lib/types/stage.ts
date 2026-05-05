@@ -40,6 +40,8 @@ export interface Stage {
     avatar: string;
     color: string;
     priority: number;
+    /** Per-agent TTS voice — carries the facilitator's voice selection to the learner domain */
+    voiceConfig?: { providerId: string; modelId?: string; voiceId: string };
   }>;
 }
 

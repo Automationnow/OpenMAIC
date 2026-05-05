@@ -58,10 +58,34 @@ export function Header({ currentSceneTitle, isLearnerMode = false }: HeaderProps
       // Always POST to learn.automationnow.org so the save and load hit the same server instance.
       const { scenes: currentScenes } = useStageStore.getState();
       if (stage && currentScenes.length > 0) {
+        // Collect full agent configs (including voiceConfig) from the registry so
+        // the learner domain can hydrate Kim's voice and other agent settings.
+        const { useAgentRegistry } = await import('@/lib/orchestration/registry/store');
+        const registry = useAgentRegistry.getState();
+        const agentIds = stage.agentIds || [];
+        const generatedAgentConfigs = registry
+          .listAgents()
+          .filter((a) => a.isGenerated && (agentIds.includes(a.id) || a.boundStageId === stage.id))
+          .map((a) => ({
+            id: a.id,
+            name: a.name,
+            role: a.role,
+            persona: a.persona,
+            avatar: a.avatar,
+            color: a.color,
+            priority: a.priority,
+            ...(a.voiceConfig ? { voiceConfig: a.voiceConfig } : {}),
+          }));
+
+        const stageWithAgents = {
+          ...stage,
+          ...(generatedAgentConfigs.length > 0 ? { generatedAgentConfigs } : {}),
+        };
+
         await fetch('https://learn.automationnow.org/api/classroom', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ stage, scenes: currentScenes }),
+          body: JSON.stringify({ stage: stageWithAgents, scenes: currentScenes }),
         });
       }
     } catch (err) {
