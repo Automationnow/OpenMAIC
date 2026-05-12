@@ -21,6 +21,8 @@ Based on the scene information above, generate a complete Canvas/PPT component f
 ## Language Directive
 {{languageDirective}}
 
+**IMPORTANT: If the language directive above does not specify a language, or if no directive is provided, ALL slide text content MUST be generated in English. Do not default to Chinese or any other language.**
+
 **Must Follow**:
 
 1. Output pure JSON directly, without any explanation or description
