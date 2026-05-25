@@ -134,6 +134,186 @@ export default function CompliancePage() {
           </div>
         </section>
 
+        {/* Incident Response & Business Continuity */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">
+            Incident Response &amp; Business Continuity
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Automation Now, LLC maintains a formal Incident Response Plan aligned with{' '}
+            <strong>NIST SP 800-61 Rev. 2</strong> (Computer Security Incident Handling Guide).
+            All security events are triaged, contained, and remediated through a structured
+            four-phase process.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="border border-gray-200 rounded-xl p-5 bg-white">
+              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-3">
+                4-Phase Response Process
+              </div>
+              <ol className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                  <div><strong>Preparation</strong> — Security controls, access management, and monitoring baselines established</div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-yellow-100 text-yellow-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                  <div><strong>Detection &amp; Analysis</strong> — Automated alerts and manual review to identify and classify incidents</div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-orange-100 text-orange-700 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                  <div><strong>Containment, Eradication &amp; Recovery</strong> — Isolate affected systems, remove threat, restore services</div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-xs font-bold">4</span>
+                  <div><strong>Post-Incident Activity</strong> — Lessons learned, documentation, and control improvements</div>
+                </li>
+              </ol>
+            </div>
+            <div className="border border-gray-200 rounded-xl p-5 bg-white">
+              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-3">
+                Notification &amp; Continuity Commitments
+              </div>
+              <ul className="space-y-3 text-sm text-gray-700">
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 mt-0.5">▸</span>
+                  <span><strong>24-Hour Notification</strong> — Affected parties notified within 24 hours of a confirmed security incident</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 mt-0.5">▸</span>
+                  <span><strong>RTO Target</strong> — Recovery Time Objective of 4 hours for critical platform services</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 mt-0.5">▸</span>
+                  <span><strong>Vercel Infrastructure</strong> — Leverages Vercel&apos;s built-in redundancy and global edge network for business continuity</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 mt-0.5">▸</span>
+                  <span><strong>Reference Standard</strong> — NIST SP 800-61 Rev. 2 Computer Security Incident Handling Guide</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* Data Retention & Deletion Policy */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">
+            Data Retention &amp; Deletion Policy
+          </h2>
+          <p className="text-gray-600 mb-6">
+            The CALE platform is designed with a <strong>zero-retention architecture</strong>.
+            No personally identifiable information (PII) is collected, stored, or retained from
+            learner sessions. This design ensures compliance with{' '}
+            <strong>FERPA</strong> (Family Educational Rights and Privacy Act) and{' '}
+            <strong>GDPR</strong> (General Data Protection Regulation) by default.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <InfraCard
+              title="Session Data"
+              value="Ephemeral Only"
+              detail="All learner session data is held in memory for the duration of the session only. No session data is written to persistent storage or databases."
+            />
+            <InfraCard
+              title="PII Storage"
+              value="Zero PII Retained"
+              detail="No student names, email addresses, or identifiers are collected. Access codes are non-identifiable tokens that cannot be linked to individuals."
+            />
+            <InfraCard
+              title="AI Conversation Logs"
+              value="Not Stored"
+              detail="AI-generated responses and learner inputs are processed in real-time and not logged, stored, or used for model training. OpenAI and Mistral AI API policies prohibit training on API data."
+            />
+            <InfraCard
+              title="FERPA Compliance"
+              value="By Design"
+              detail="Because no education records are created or stored, CALE does not generate FERPA-covered records. Institutional partners retain full control of their learner data."
+            />
+            <InfraCard
+              title="GDPR Compliance"
+              value="By Design"
+              detail="No personal data is processed within the meaning of GDPR Article 4. The zero-retention design eliminates data subject rights obligations related to platform usage."
+            />
+            <InfraCard
+              title="Data Deletion"
+              value="Automatic"
+              detail="Upon session termination, all in-memory session context is automatically cleared. No manual deletion requests are required as no persistent data is created."
+            />
+          </div>
+        </section>
+
+        {/* NIST Cybersecurity Framework Alignment */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">
+            NIST Cybersecurity Framework (CSF) Alignment
+          </h2>
+          <p className="text-gray-600 mb-6">
+            The CALE platform security posture is mapped to the{' '}
+            <strong>NIST Cybersecurity Framework (CSF) 2.0</strong> five core functions.
+            This alignment demonstrates our commitment to a structured, risk-based approach
+            to cybersecurity consistent with federal standards.
+          </p>
+          <div className="space-y-4">
+            <NistFunctionRow
+              function="Identify"
+              color="purple"
+              description="Asset Management &amp; Risk Assessment"
+              controls={[
+                'Platform asset inventory maintained (Vercel, OpenAI API, Mistral AI API, GitHub)',
+                'Third-party vendor security assessments conducted for all AI providers',
+                'Annual risk assessment aligned with NIST SP 800-30',
+              ]}
+            />
+            <NistFunctionRow
+              function="Protect"
+              color="blue"
+              description="Access Control &amp; Data Security"
+              controls={[
+                'Access code authentication prevents unauthorized platform access',
+                'TLS 1.3 encryption for all data in transit',
+                'Zero-retention architecture eliminates data-at-rest exposure',
+                'Vercel SOC 2 Type II infrastructure provides physical and logical access controls',
+              ]}
+            />
+            <NistFunctionRow
+              function="Detect"
+              color="yellow"
+              description="Anomaly &amp; Event Monitoring"
+              controls={[
+                'Vercel platform monitoring and alerting for uptime and performance anomalies',
+                'OpenAI and Mistral AI API usage monitoring for abuse detection',
+                'Access code usage patterns reviewed for anomalous activity',
+              ]}
+            />
+            <NistFunctionRow
+              function="Respond"
+              color="orange"
+              description="Incident Response Execution"
+              controls={[
+                'Formal Incident Response Plan per NIST SP 800-61 Rev. 2',
+                '24-hour affected party notification commitment',
+                'Documented containment and eradication procedures',
+                'Post-incident review and lessons learned process',
+              ]}
+            />
+            <NistFunctionRow
+              function="Recover"
+              color="green"
+              description="Recovery Planning &amp; Improvements"
+              controls={[
+                '4-hour Recovery Time Objective (RTO) for critical services',
+                'Vercel global edge network provides automatic failover and redundancy',
+                'Post-incident improvement cycle integrated into quarterly security reviews',
+              ]}
+            />
+          </div>
+          <p className="text-xs text-gray-400 mt-4">
+            Reference: NIST Cybersecurity Framework 2.0 — National Institute of Standards and Technology (NIST), U.S. Department of Commerce.{' '}
+            <a href="https://www.nist.gov/cyberframework" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+              nist.gov/cyberframework ↗
+            </a>
+          </p>
+        </section>
+
         {/* About the Platform */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">
@@ -280,6 +460,56 @@ function InfraCard({
           {linkText} ↗
         </a>
       )}
+    </div>
+  );
+}
+
+function NistFunctionRow({
+  function: fn,
+  color,
+  description,
+  controls,
+}: {
+  function: string;
+  color: 'purple' | 'blue' | 'yellow' | 'orange' | 'green';
+  description: string;
+  controls: string[];
+}) {
+  const colorMap = {
+    purple: 'bg-purple-100 text-purple-800 border-purple-200',
+    blue: 'bg-blue-100 text-blue-800 border-blue-200',
+    yellow: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    orange: 'bg-orange-100 text-orange-800 border-orange-200',
+    green: 'bg-green-100 text-green-800 border-green-200',
+  };
+  const dotMap = {
+    purple: 'bg-purple-500',
+    blue: 'bg-blue-500',
+    yellow: 'bg-yellow-500',
+    orange: 'bg-orange-500',
+    green: 'bg-green-500',
+  };
+  return (
+    <div className={`border rounded-xl p-5 ${colorMap[color]}`}>
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0">
+          <div className={`w-3 h-3 rounded-full mt-1.5 ${dotMap[color]}`} />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-base font-bold">{fn}</span>
+            <span className="text-sm font-medium opacity-75">— {description}</span>
+          </div>
+          <ul className="space-y-1">
+            {controls.map((control, i) => (
+              <li key={i} className="text-sm flex items-start gap-2">
+                <span className="mt-1 opacity-60">·</span>
+                <span dangerouslySetInnerHTML={{ __html: control }} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
