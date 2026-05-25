@@ -180,6 +180,9 @@ export function Roundtable({
   const setTTSMuted = useSettingsStore((s) => s.setTTSMuted);
   const ttsEnabled = useSettingsStore((state) => state.ttsEnabled);
   const asrEnabled = useSettingsStore((state) => state.asrEnabled);
+  // WCAG 2.1 SC 1.2.3 / Section 508: visible caption toggle
+  const captionsEnabled = useSettingsStore((s) => s.captionsEnabled);
+  const setCaptionsEnabled = useSettingsStore((s) => s.setCaptionsEnabled);
   const chatAreaWidth = useSettingsStore((s) => s.chatAreaWidth);
   const ttsVolume = useSettingsStore((s) => s.ttsVolume);
   const setTTSVolume = useSettingsStore((s) => s.setTTSVolume);
@@ -2089,6 +2092,64 @@ export function Roundtable({
         </div>
       </div>
       {/* close interaction row */}
+
+      {/* ── WCAG 2.1 SC 1.2.3 / Section 508 §503.4: Caption Controls & Live Region ──
+           1. Visible CC toggle button — lets users turn on/off the caption bar.
+           2. Visible caption bar — shows current speech text when captionsEnabled.
+           3. Hidden aria-live region — always active for screen readers regardless
+              of the visual toggle state.
+      ── */}
+
+      {/* CC Toggle button — always visible in the bottom-right corner */}
+      <button
+        type="button"
+        onClick={() => setCaptionsEnabled(!captionsEnabled)}
+        aria-pressed={captionsEnabled}
+        aria-label={captionsEnabled ? 'Disable captions (CC)' : 'Enable captions (CC)'}
+        title={captionsEnabled ? 'Disable captions (CC)' : 'Enable captions (CC)'}
+        className={cn(
+          'absolute bottom-16 right-3 z-40 flex items-center justify-center',
+          'w-8 h-6 rounded text-[10px] font-bold border transition-all duration-200',
+          captionsEnabled
+            ? 'bg-purple-600 border-purple-500 text-white shadow-md'
+            : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700',
+        )}
+      >
+        CC
+      </button>
+
+      {/* Visible caption bar — shown when captionsEnabled and speech is active */}
+      <AnimatePresence>
+        {captionsEnabled && sourceText && (
+          <motion.div
+            key="caption-bar"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.2 }}
+            role="status"
+            aria-live="off"
+            aria-label="Live captions"
+            className={
+              'mx-2 mb-2 rounded-lg px-4 py-2 text-sm leading-relaxed text-center ' +
+              'bg-black/80 text-white dark:bg-black/90 backdrop-blur-sm ' +
+              'max-h-24 overflow-y-auto scrollbar-hide'
+            }
+          >
+            {sourceText}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Hidden aria-live region — always active for screen readers (WCAG 1.2.3) */}
+      <div
+        aria-live="polite"
+        aria-atomic="false"
+        aria-label="Kim narration captions"
+        className="sr-only"
+      >
+        {sourceText || ''}
+      </div>
     </div>
   );
 }

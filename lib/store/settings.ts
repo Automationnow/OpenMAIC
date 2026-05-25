@@ -169,6 +169,9 @@ export interface SettingsState {
   chatAreaCollapsed: boolean;
   chatAreaWidth: number;
 
+  // Accessibility preferences (WCAG 2.1 SC 1.2.3 / Section 508)
+  captionsEnabled: boolean;
+
   // Actions
   setModel: (providerId: ProviderId, modelId: string) => void;
   setProviderConfig: (providerId: ProviderId, config: Partial<ProvidersConfig[ProviderId]>) => void;
@@ -187,6 +190,9 @@ export interface SettingsState {
   setSidebarCollapsed: (collapsed: boolean) => void;
   setChatAreaCollapsed: (collapsed: boolean) => void;
   setChatAreaWidth: (width: number) => void;
+
+  // Accessibility actions
+  setCaptionsEnabled: (enabled: boolean) => void;
 
   // Audio actions
   setTTSProvider: (providerId: TTSProviderId) => void;
@@ -621,6 +627,9 @@ export const useSettingsStore = create<SettingsState>()(
         chatAreaCollapsed: true,
         chatAreaWidth: 320,
 
+        // Accessibility preferences (WCAG 2.1 SC 1.2.3)
+        captionsEnabled: false,
+
         // Audio settings (use defaults)
         ...defaultAudioConfig,
 
@@ -682,6 +691,9 @@ export const useSettingsStore = create<SettingsState>()(
         setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
         setChatAreaCollapsed: (collapsed) => set({ chatAreaCollapsed: collapsed }),
         setChatAreaWidth: (width) => set({ chatAreaWidth: width }),
+
+        // Accessibility actions
+        setCaptionsEnabled: (enabled) => set({ captionsEnabled: enabled }),
 
         // Audio actions
         setTTSProvider: (providerId) =>

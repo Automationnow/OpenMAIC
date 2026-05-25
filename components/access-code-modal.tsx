@@ -83,8 +83,12 @@ export function AccessCodeModal({ open, onSuccess }: AccessCodeModalProps) {
             />
           </div>
 
-          {/* Content card */}
+          {/* Content card — role=dialog for WCAG 4.1.2 */}
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="access-code-title"
+            aria-describedby="access-code-desc"
             className="relative z-10 w-full max-w-sm mx-4"
             initial={{ opacity: 0, y: 20, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -104,6 +108,7 @@ export function AccessCodeModal({ open, onSuccess }: AccessCodeModalProps) {
 
               {/* Title */}
               <motion.h1
+                id="access-code-title"
                 className="mb-1 text-center text-lg font-semibold tracking-tight text-foreground"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -113,6 +118,7 @@ export function AccessCodeModal({ open, onSuccess }: AccessCodeModalProps) {
               </motion.h1>
 
               <motion.p
+                id="access-code-desc"
                 className="mb-6 text-center text-sm text-muted-foreground"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -130,9 +136,16 @@ export function AccessCodeModal({ open, onSuccess }: AccessCodeModalProps) {
                 transition={{ delay: 0.3, duration: 0.4 }}
               >
                 <div className="relative">
+                  {/* Visually hidden label for screen readers — WCAG 2.1 SC 1.3.1 */}
+                  <label htmlFor="access-code-input" className="sr-only">
+                    {t('accessCode.title')}
+                  </label>
                   <input
                     ref={inputRef}
+                    id="access-code-input"
                     type="password"
+                    aria-describedby={error ? 'access-code-error' : undefined}
+                    aria-invalid={!!error}
                     placeholder={t('accessCode.placeholder')}
                     value={code}
                     onChange={(e) => {
@@ -151,6 +164,7 @@ export function AccessCodeModal({ open, onSuccess }: AccessCodeModalProps) {
                   />
                   <button
                     type="submit"
+                    aria-label="Submit access code"
                     disabled={!code || loading || success}
                     className={`
                       absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center
@@ -174,10 +188,13 @@ export function AccessCodeModal({ open, onSuccess }: AccessCodeModalProps) {
                   </button>
                 </div>
 
-                {/* Error message */}
+                {/* Error message — WCAG 4.1.3: Status Messages */}
                 <AnimatePresence mode="wait">
                   {error && (
                     <motion.p
+                      id="access-code-error"
+                      role="alert"
+                      aria-live="assertive"
                       className="text-center text-sm text-destructive"
                       initial={{ opacity: 0, y: -4, height: 0 }}
                       animate={{ opacity: 1, y: 0, height: 'auto' }}

@@ -18,9 +18,9 @@ const inter = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'OpenMAIC',
+  title: 'CALE — Automation Now, LLC',
   description:
-    'The open-source AI interactive classroom. Upload a PDF to instantly generate an immersive, multi-agent learning experience.',
+    'The AI-powered interactive classroom. Upload a PDF to instantly generate an immersive, multi-agent learning experience. Powered by Automation Now, LLC.',
 };
 
 export default function RootLayout({
@@ -34,10 +34,28 @@ export default function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}
         suppressHydrationWarning
       >
+        {/*
+          WCAG 2.1 SC 2.4.1 — Skip Navigation Link
+          Allows keyboard and screen reader users to bypass repeated navigation
+          and jump directly to the main content area.
+        */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[9999] focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:text-sm focus:font-semibold focus:shadow-lg"
+        >
+          Skip to main content
+        </a>
+
         <ThemeProvider>
           <I18nProvider>
             <ServerProvidersInit />
-            <AccessCodeGuard>{children}</AccessCodeGuard>
+            {/*
+              WCAG 2.1 SC 1.3.1 / 4.1.2 — ARIA Landmark: main
+              The id="main-content" is the skip-nav target.
+            */}
+            <main id="main-content">
+              <AccessCodeGuard>{children}</AccessCodeGuard>
+            </main>
             <Toaster position="top-center" />
           </I18nProvider>
         </ThemeProvider>
