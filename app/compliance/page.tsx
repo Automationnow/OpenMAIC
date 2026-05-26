@@ -26,7 +26,7 @@ export default function CompliancePage() {
           </div>
           <Link
             href="/"
-            className="text-sm text-blue-600 hover:underline font-medium"
+            className="text-sm text-blue-600 underline font-medium"
           >
             ← Back to Platform
           </Link>
@@ -363,7 +363,7 @@ export default function CompliancePage() {
             <div className="bg-gray-50 rounded-xl p-6">
               <h3 className="font-semibold text-gray-900 mb-3">General Inquiries</h3>
               <p className="text-gray-600 text-sm mb-2">For course delivery, licensing, and partnership inquiries:</p>
-              <a href="https://www.automationnow.org" className="text-blue-600 hover:underline font-medium">
+              <a href="https://www.automationnow.org" className="text-blue-600 underline font-medium">
                 www.automationnow.org
               </a>
             </div>
@@ -431,27 +431,27 @@ export default function CompliancePage() {
               </h3>
               <ul className="space-y-2 text-sm text-gray-700">
                 <li>
-                  <a href="https://www.section508.gov" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  <a href="https://www.section508.gov" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
                     Section 508 &mdash; Rehabilitation Act &#8599;
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  <a href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
                     WCAG 2.1 Level AA (W3C) &#8599;
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.ada.gov/resources/2024-03-08-web-rule/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  <a href="https://www.ada.gov/resources/2024-03-08-web-rule/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
                     ADA Title III &mdash; 2024 Web Rule &#8599;
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.acquisition.gov/far/39.201" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  <a href="https://www.acquisition.gov/far/39.201" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
                     FAR 39.2 &mdash; ICT Accessibility &#8599;
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.access-board.gov/ict/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  <a href="https://www.access-board.gov/ict/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
                     U.S. Access Board ICT Standards &#8599;
                   </a>
                 </li>
@@ -535,7 +535,7 @@ function InfraCard({
       <div className="text-base font-bold text-gray-900 mb-2">{value}</div>
       <p className="text-sm text-gray-500 mb-2">{detail}</p>
       {link && linkText && (
-        <a href={link} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline">
+        <a href={link} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 underline">
           {linkText} ↗
         </a>
       )}

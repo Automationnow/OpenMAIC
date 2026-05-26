@@ -28,7 +28,7 @@ export default function AccessibilityPage() {
           </div>
           <Link
             href="/"
-            className="text-sm text-blue-600 hover:underline font-medium"
+            className="text-sm text-blue-600 underline font-medium"
             aria-label="Return to CALE platform home"
           >
             ← Back to Platform
@@ -80,7 +80,7 @@ export default function AccessibilityPage() {
               href="https://www.w3.org/TR/WCAG21/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="text-blue-600 underline"
             >
               Web Content Accessibility Guidelines (WCAG) 2.1, Level AA
             </a>{' '}
@@ -90,7 +90,7 @@ export default function AccessibilityPage() {
               href="https://www.access-board.gov/ict/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="text-blue-600 underline"
             >
               U.S. Access Board (36 CFR Part 1194)
             </a>
@@ -110,7 +110,7 @@ export default function AccessibilityPage() {
             The CALE platform at{' '}
             <a
               href="https://learn.automationnow.org"
-              className="text-blue-600 hover:underline"
+              className="text-blue-600 underline"
             >
               learn.automationnow.org
             </a>{' '}
@@ -276,7 +276,7 @@ export default function AccessibilityPage() {
               <span className="font-semibold text-gray-800">Email:</span>{' '}
               <a
                 href="mailto:automationnow@automationnow.org"
-                className="text-blue-600 hover:underline"
+                className="text-blue-600 underline"
                 aria-label="Send email to Automation Now LLC accessibility team"
               >
                 automationnow@automationnow.org
@@ -288,7 +288,7 @@ export default function AccessibilityPage() {
                 href="https://www.automationnow.org"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
+                className="text-blue-600 underline"
                 aria-label="Visit Automation Now LLC main website (opens in new tab)"
               >
                 www.automationnow.org
@@ -302,7 +302,7 @@ export default function AccessibilityPage() {
                 href="https://www.ada.gov"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
+                className="text-blue-600 underline"
               >
                 U.S. Department of Justice ADA Information Line
               </a>{' '}
@@ -327,7 +327,7 @@ export default function AccessibilityPage() {
               href="https://www.section508.gov/manage/laws-and-policies/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="text-blue-600 underline"
             >
               relevant federal agency&apos;s Section 508 Coordinator
             </a>
@@ -336,7 +336,7 @@ export default function AccessibilityPage() {
               href="https://www.ada.gov/filing-a-complaint/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="text-blue-600 underline"
             >
               U.S. Department of Justice Civil Rights Division
             </a>
@@ -352,7 +352,7 @@ export default function AccessibilityPage() {
               href="https://www.w3.org/WAI/planning/statements/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="text-blue-600 underline"
             >
               W3C WAI Accessibility Statement Generator guidelines
             </a>
@@ -360,17 +360,17 @@ export default function AccessibilityPage() {
             are made to the platform.
           </p>
           <div className="mt-4 flex flex-wrap gap-4">
-            <Link href="/compliance" className="text-blue-600 hover:underline">
+            <Link href="/compliance" className="text-blue-600 underline">
               Compliance &amp; VPAT
             </Link>
-            <Link href="/" className="text-blue-600 hover:underline">
+            <Link href="/" className="text-blue-600 underline">
               Return to Platform
             </Link>
             <a
               href="https://www.automationnow.org"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="text-blue-600 underline"
             >
               automationnow.org
             </a>
