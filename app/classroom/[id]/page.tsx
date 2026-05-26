@@ -6,6 +6,7 @@ import { useStageStore } from '@/lib/store';
 import { loadImageMapping } from '@/lib/utils/image-storage';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
+
 import { useSceneGenerator } from '@/lib/hooks/use-scene-generator';
 import { useLearnerMode } from '@/lib/hooks/use-learner-mode';
 import { useMediaGenerationStore } from '@/lib/store/media-generation';
@@ -21,9 +22,24 @@ export default function ClassroomDetailPage() {
   const classroomId = params?.id as string;
 
   const { loadFromStorage } = useStageStore();
+  const stage = useStageStore((s) => s.stage);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Build a descriptive, accessible page title from the stage name (WCAG 2.4.2)
+  const pageTitle = stage?.name
+    ? `${stage.name} — CALE | Automation Now, LLC`
+    : 'Classroom — CALE | Automation Now, LLC';
+
+  // Update document title dynamically when stage loads (WCAG 2.4.2 — Page Titled)
+  useEffect(() => {
+    document.title = pageTitle;
+    return () => {
+      // Restore default title when leaving the classroom
+      document.title = 'CALE — Automation Now, LLC';
+    };
+  }, [pageTitle]);
 
   const generationStartedRef = useRef(false);
 
