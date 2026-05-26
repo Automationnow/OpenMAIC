@@ -207,3 +207,51 @@
     transform: scale(1.08);
   }
 }
+
+/* ============================================================
+   WCAG 2.4.7 — Focus Visible (Section 508 §1194.21(c))
+   Ensures all interactive elements have a visible focus ring
+   with at least 3:1 contrast ratio against adjacent colors.
+   Uses :focus-visible to avoid showing rings on mouse clicks
+   while preserving them for keyboard and assistive technology.
+   ============================================================ */
+
+/* Remove browser default and apply consistent accessible focus ring */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 3px solid #8b47ea;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* High-contrast focus ring for dark backgrounds (CALE dark UI) */
+.dark *:focus-visible,
+[data-theme="dark"] *:focus-visible {
+  outline: 3px solid #a78bfa;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* Skip navigation link — visible only on keyboard focus (WCAG 2.4.1) */
+.skip-nav {
+  position: absolute;
+  top: -9999px;
+  left: 0;
+  z-index: 9999;
+  padding: 0.75rem 1.5rem;
+  background: #8b47ea;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  border-radius: 0 0 6px 0;
+}
+
+.skip-nav:focus-visible {
+  top: 0;
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+}

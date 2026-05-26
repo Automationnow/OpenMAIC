@@ -381,6 +381,85 @@ export default function CompliancePage() {
           </div>
         </section>
 
+        {/* Accessibility & VPAT Section */}
+        <section className="mb-12" aria-labelledby="a11y-section-heading">
+          <h2
+            id="a11y-section-heading"
+            className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200"
+          >
+            Accessibility &amp; VPAT
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* VPAT Download Card */}
+            <div className="border border-purple-200 rounded-xl p-6 bg-purple-50">
+              <div className="text-xs text-purple-600 font-semibold uppercase tracking-wide mb-2">
+                Accessibility Conformance Report
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">
+                VPAT 2.5 &mdash; Section 508
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Our Voluntary Product Accessibility Template (VPAT) documents CALE platform
+                conformance with WCAG 2.1 Level AA and Section 508 of the Rehabilitation Act.
+                Required by federal agencies under FAR 39.2 for ICT procurement.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="/Automation_Now_LLC_CALE_VPAT_ACR.pdf"
+                  download
+                  className="inline-flex items-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-800 transition-colors"
+                  aria-label="Download the CALE Platform VPAT PDF document"
+                >
+                  &#8595; Download VPAT (PDF)
+                </a>
+                <Link
+                  href="/accessibility"
+                  className="inline-flex items-center gap-2 border border-purple-300 text-purple-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-100 transition-colors"
+                  aria-label="View the full Accessibility Statement page"
+                >
+                  Accessibility Statement &rarr;
+                </Link>
+              </div>
+            </div>
+            {/* Standards Reference Card */}
+            <div className="border border-gray-200 rounded-xl p-6 bg-white">
+              <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-2">
+                Standards &amp; References
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-3">
+                Federal Accessibility Standards
+              </h3>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li>
+                  <a href="https://www.section508.gov" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    Section 508 &mdash; Rehabilitation Act &#8599;
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    WCAG 2.1 Level AA (W3C) &#8599;
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.ada.gov/resources/2024-03-08-web-rule/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    ADA Title III &mdash; 2024 Web Rule &#8599;
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.acquisition.gov/far/39.201" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    FAR 39.2 &mdash; ICT Accessibility &#8599;
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.access-board.gov/ict/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    U.S. Access Board ICT Standards &#8599;
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
         {/* Footer */}
         <footer className="border-t border-gray-200 pt-8 text-center text-sm text-gray-500">
           <p>
