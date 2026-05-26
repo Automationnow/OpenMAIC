@@ -306,9 +306,9 @@ export default function CompliancePage() {
               ]}
             />
           </div>
-          <p className="text-xs text-gray-400 mt-4">
+          <p className="text-xs text-gray-600 mt-4">
             Reference: NIST Cybersecurity Framework 2.0 — National Institute of Standards and Technology (NIST), U.S. Department of Commerce.{' '}
-            <a href="https://www.nist.gov/cyberframework" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+            <a href="https://www.nist.gov/cyberframework" target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
               nist.gov/cyberframework ↗
             </a>
           </p>
@@ -465,13 +465,13 @@ export default function CompliancePage() {
           <p>
             © {new Date().getFullYear()} Automation Now, LLC. All rights reserved.
             &nbsp;|&nbsp;
-            <a href="https://www.automationnow.org" className="hover:underline text-blue-600">
+            <a href="https://www.automationnow.org" className="underline text-blue-700">
               automationnow.org
             </a>
             &nbsp;|&nbsp;
             <span>SAM.gov UEI: 1WYM2 &nbsp;|&nbsp; CAGE: KESEQWKHCDJ3</span>
           </p>
-          <p className="mt-2 text-xs text-gray-400">
+          <p className="mt-2 text-xs text-gray-600">
             Hosted on Vercel (SOC 2 Type II) &nbsp;·&nbsp; Content AI: OpenAI &nbsp;·&nbsp; Voice AI: Mistral AI &nbsp;·&nbsp;
             Platform domain: learn.automationnow.org
           </p>
@@ -577,7 +577,7 @@ function NistFunctionRow({
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-base font-bold">{fn}</span>
-            <span className="text-sm font-medium opacity-75">— {description}</span>
+            <span className="text-sm font-semibold">— {description}</span>
           </div>
           <ul className="space-y-1">
             {controls.map((control, i) => (
