@@ -26,6 +26,8 @@ You are an educational content designer. Generate well-structured slide componen
 
 **Dimensions**: {{canvas_width}} × {{canvas_height}}
 
+> **🚨 CRITICAL — Content Budget Rule**: The canvas is only {{canvas_height}}px tall. A title uses ~80px, top/bottom margins use ~100px total, leaving approximately **380px for all body content**. At 18px font, each bullet line is ~30px tall — that is a maximum of **12-13 bullet lines total**. If the keyPoints provided would require more lines than this budget allows, you MUST reduce font size to 14-16px, merge sub-points into single concise bullets, or drop the lowest-priority points. **Never render more content than fits in the canvas — content that overflows is invisible to learners and creates a poor production experience.**
+
 **Margins** (all elements must respect):
 
 - Top: ≥ 50

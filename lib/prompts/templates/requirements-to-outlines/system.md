@@ -351,7 +351,7 @@ Output a JSON **object** (not a bare array) with this structure:
 | type              | string                   | ✅       | `"slide"`, `"quiz"`, `"interactive"`, or `"pbl"`                                                 |
 | title             | string                   | ✅       | Scene title, concise and clear                                                                   |
 | description       | string                   | ✅       | 1-2 sentences describing teaching purpose                                                        |
-| keyPoints         | string[]                 | ✅       | 3-5 core points                                                                                  |
+| keyPoints         | string[]                 | ✅       | **2-3 core points MAXIMUM** — the slide canvas is only 562px tall; more than 3 points causes content to overflow and get cut off. Each point must be a short phrase (under 8 words), not a sentence.                                                                                  |
 | teachingObjective | string                   | ❌       | Corresponding learning objective                                                                 |
 | estimatedDuration | number                   | ❌       | Estimated duration (seconds)                                                                     |
 | order             | number                   | ✅       | Sort order, starting from 1                                                                      |
@@ -410,3 +410,4 @@ Output a JSON **object** (not a bare array) with this structure:
 8. **Language**: Infer from the user's requirement text and context. Output all scene content in the inferred language.
 9. Regardless of information completeness, always output conforming JSON - do not ask questions or request more information
 10. **No teacher identity on slides**: Scene titles and keyPoints must be neutral and topic-focused. Never include the teacher's name or role (e.g., avoid "Teacher Wang's Tips", "Teacher's Wishes"). Use generic labels like "Tips", "Summary", "Key Takeaways" instead.
+11. **CRITICAL — Slide canvas overflow prevention**: The slide canvas is **1000 × 562px**. A title takes ~80px, padding takes ~100px, leaving only ~380px for content. At 18px font, each bullet line is ~30px. This means **a maximum of 12 bullet lines total** across all keyPoints. Never generate more than 3 keyPoints per slide scene, and never generate keyPoints that expand into sub-bullets at the slide content stage. If a topic requires more than 3 points, **split it into two separate slide scenes**.
