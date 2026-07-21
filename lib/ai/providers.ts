@@ -602,33 +602,33 @@ export const PROVIDERS: Record<ProviderId, ProviderConfig> = {
     icon: '/logos/deepseek.svg',
     models: [
       {
-        id: 'deepseek-chat',
-        name: 'DeepSeek-Chat',
-        contextWindow: 128000,
-        outputWindow: 8192,
+        id: 'deepseek-v4-flash',
+        name: 'DeepSeek V4 Flash',
+        contextWindow: 1048576,
+        outputWindow: 393216,
         capabilities: {
           streaming: true,
           tools: true,
           vision: false,
           thinking: {
             toggleable: true,
-            budgetAdjustable: false,
+            budgetAdjustable: true,
             defaultEnabled: false,
           },
         },
       },
       {
-        id: 'deepseek-reasoner',
-        name: 'DeepSeek-Reasoner',
-        contextWindow: 128000,
-        outputWindow: 32000,
+        id: 'deepseek-v4-pro',
+        name: 'DeepSeek V4 Pro',
+        contextWindow: 1048576,
+        outputWindow: 393216,
         capabilities: {
           streaming: true,
           tools: true,
           vision: false,
           thinking: {
             toggleable: true,
-            budgetAdjustable: false,
+            budgetAdjustable: true,
             defaultEnabled: true,
           },
         },
