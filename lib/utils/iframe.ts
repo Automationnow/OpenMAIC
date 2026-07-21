@@ -1,22 +1,46 @@
 /**
  * Patch embedded HTML to display correctly inside an iframe.
  *
- * Injects CSS that ensures proper sizing and scrolling behavior
- * when HTML content is rendered via srcDoc in an iframe.
+ * Injects CSS that ensures proper sizing behavior when HTML content
+ * is rendered via srcDoc in a fixed 16:9 iframe canvas.
+ *
+ * IMPORTANT: Interactive widgets render inside a fixed 16:9 aspect-ratio
+ * iframe. Learners cannot scroll the iframe — all content must fit within
+ * the viewport. overflow: hidden on html/body prevents clipped content
+ * from causing invisible layout overflow. Inner regions that need scrolling
+ * (e.g. control panels) should use the .scrollable class or data-scrollable
+ * attribute, which are explicitly re-enabled below.
  */
 export function patchHtmlForIframe(html: string): string {
   const iframeCss = `<style data-iframe-patch>
-  html, body {
+  /*
+   * Canvas constraint: fixed 16:9 iframe — no learner scrolling available.
+   * All content must fit within 100vw × 100vh.
+   */
+  html {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
   }
-  /* Fix min-h-screen: in iframes 100vh is the iframe height, which is correct,
-     but ensure body actually fills it */
-  body { min-height: 100vh; }
+  body {
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  /* Allow explicitly scrollable inner regions (control panels, lists, etc.) */
+  [data-scrollable],
+  .scrollable,
+  .overflow-auto,
+  .overflow-y-auto,
+  .overflow-scroll,
+  .overflow-y-scroll {
+    overflow: auto !important;
+  }
 </style>`;
 
   // Insert right after <head> or at the start of the document

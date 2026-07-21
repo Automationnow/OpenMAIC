@@ -30,12 +30,13 @@ Generate a complete, interactive HTML simulation with these MANDATORY features:
 3. **Canvas visualization** with proper sizing
 4. **Preset buttons** for common scenarios
 
-### Mobile Responsiveness (CRITICAL)
-1. **Control panel MUST NOT overlap canvas on mobile**
-2. Use `flex-col md:flex-row` layout with proper spacing
-3. Control panel: `max-h-[40vh] md:max-h-screen` with overflow scroll
-4. Canvas container: `min-h-[300px]` to ensure visibility
-5. Touch-friendly controls (44px minimum touch targets)
+### Layout: Fixed 16:9 Canvas (CRITICAL)
+1. **This widget renders in a fixed 16:9 landscape iframe — NO scrolling is available to the learner**
+2. Use `display: flex; height: 100vh; overflow: hidden` on `body` — content MUST fit entirely within the viewport
+3. **Do NOT use `flex-col md:flex-row`** — always use `flex-row` (landscape only, no mobile layout)
+4. Control panel: fixed width (e.g. `width: 280px; max-height: 100vh; overflow-y: auto`)
+5. Canvas container: `flex: 1; height: 100vh` to fill remaining space
+6. **Never use `min-h-screen`, `min-height: 100vh`, or any layout that causes vertical overflow**
 
 ### Button Logic (CRITICAL)
 1. **Main button MUST handle all states correctly — ALL button text MUST be in English:**

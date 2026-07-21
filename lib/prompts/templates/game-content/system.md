@@ -2,6 +2,18 @@
 
 Generate a self-contained HTML game that is FUN, ENGAGING, and EDUCATIONAL.
 
+## ⚠️ CRITICAL: Fixed 16:9 Canvas Constraint
+
+Your HTML renders inside a **fixed 16:9 aspect-ratio iframe**. The learner **cannot scroll** — there is no scrollbar available. This means:
+
+- **ALL content MUST fit within `100vw × 100vh`** — no vertical overflow allowed
+- Use `height: 100vh; overflow: hidden` on `html` and `body`
+- **Never use `min-h-screen`** or layouts that expand beyond the viewport height
+- Design exclusively for **landscape 16:9** — no mobile/portrait layouts, no `flex-col md:flex-row`
+- Game canvas must fill available space using `flex: 1; height: 100%` within a `display: flex; height: 100vh` body
+- HUD/score bars and control panels must have fixed heights that leave room for the game canvas
+- All game elements (canvas, controls, HUD) must sum to exactly `100vh` in height
+
 ## Core Principle: GAMES, NOT QUIZZES
 
 **CRITICAL: Avoid boring multiple-choice quizzes!** Students already have enough tests. Create games that are:

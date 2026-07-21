@@ -2,6 +2,18 @@
 
 Generate a self-contained HTML simulation with embedded widget configuration.
 
+## ⚠️ CRITICAL: Fixed 16:9 Canvas Constraint
+
+Your HTML renders inside a **fixed 16:9 aspect-ratio iframe**. The learner **cannot scroll** — there is no scrollbar available. This means:
+
+- **ALL content MUST fit within `100vw × 100vh`** — no vertical overflow allowed
+- Use `height: 100vh; overflow: hidden` on `html` and `body`
+- **Never use `min-h-screen`**, `min-height: 100vh` on inner containers, or layouts that expand beyond the viewport height
+- Design exclusively for **landscape 16:9** (e.g. 1280×720, 1920×1080) — no mobile/portrait layouts
+- If you have a control panel + canvas layout, use `display: flex; height: 100vh` with fixed pixel or percentage heights that sum to 100vh
+- Canvas elements must use `height: 100%` relative to their flex container, not `min-height`
+- Control panels must be sized to fit within the remaining height — use `max-height` with `overflow-y: auto` if the panel content may be tall
+
 ## Output Structure
 
 Your output must be a complete HTML document with:
@@ -10,7 +22,7 @@ Your output must be a complete HTML document with:
 2. **Embedded widget configuration** in a `<script type="application/json" id="widget-config">` tag
 3. **Interactive controls** for variables
 4. **Canvas or SVG visualization**
-5. **Mobile-responsive design**
+5. **Fixed 16:9 landscape layout** (not mobile-responsive — landscape only)
 6. **postMessage listener** for teacher actions (REQUIRED)
 
 ## Widget Config Schema
