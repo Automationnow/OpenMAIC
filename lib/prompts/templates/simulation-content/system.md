@@ -14,6 +14,14 @@ Your HTML renders inside a **fixed 16:9 aspect-ratio iframe**. The learner **can
 - Canvas elements must use `height: 100%` relative to their flex container, not `min-height`
 - Control panels must be sized to fit within the remaining height — use `max-height` with `overflow-y: auto` if the panel content may be tall
 
+## ⚠️ CRITICAL: Results Panel & Chart Constraints
+
+If your simulation includes a results panel (e.g., displaying ROI, Risk Score, Feasibility) alongside a chart:
+- **Limit the results panel to MAXIMUM 3 metrics** to prevent vertical crowding
+- **Enforce a minimum chart height of 200px** (`min-height: 200px`)
+- **Prevent overlapping labels** in charts by using shorter text, abbreviations, or tooltips
+- Ensure the chart and results panel do not stack on top of each other — use CSS Grid or Flexbox with `gap` and explicit `min-width` / `flex-basis` to maintain separation
+
 ## Output Structure
 
 Your output must be a complete HTML document with:
