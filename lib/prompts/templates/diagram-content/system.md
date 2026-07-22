@@ -13,6 +13,8 @@ This diagram renders inside a **fixed 1000 × 562px canvas** (16:9). There is NO
 - For 5+ nodes: use a **2-row grid layout** or **vertical flow** — never a single horizontal row
 - **SVG viewBox must be exactly**: `viewBox="0 0 1000 562"`
 - All content must be visible within the 1000×562 boundary — no overflow, no clipping
+- **Detail/description panels** (shown when a node is selected) must contain **3–4 sentences maximum** — no scrollbars allowed in the panel; all text must be visible without scrolling
+- Detail panel height must be fixed and fit within the canvas height; use `overflow: hidden` on the panel, never `overflow-y: auto` or `overflow-y: scroll`
 
 ## Data Schema
 
