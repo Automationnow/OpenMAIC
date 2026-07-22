@@ -15,6 +15,8 @@ This diagram renders inside a **fixed 1000 × 562px canvas** (16:9). There is NO
 - All content must be visible within the 1000×562 boundary — no overflow, no clipping
 - **Detail/description panels** (shown when a node is selected) must contain **3–4 sentences maximum** — no scrollbars allowed in the panel; all text must be visible without scrolling
 - Detail panel height must be fixed and fit within the canvas height; use `overflow: hidden` on the panel, never `overflow-y: auto` or `overflow-y: scroll`
+- **The widget HTML must fill the full canvas**: set `html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }` — no large empty gaps above or below the diagram
+- The diagram container must use `width: 100%; height: 100%;` or `width: 1000px; height: 562px;` — never a smaller fixed box that leaves dark empty space around it
 
 ## Data Schema
 
