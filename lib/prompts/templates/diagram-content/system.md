@@ -2,6 +2,18 @@
 
 Generate a self-contained HTML diagram with connected nodes.
 
+## CRITICAL: Fixed 16:9 Canvas Constraint
+This diagram renders inside a **fixed 1000 × 562px canvas** (16:9). There is NO scrolling available.
+- **Maximum 4 nodes** in a horizontal flow layout. If content requires more than 4 nodes, use a vertical or 2×2 grid layout instead.
+- **NODE_WIDTH = 150px maximum** for horizontal layouts with 4 nodes
+- **Edge labels must be 2–3 words maximum** — long edge labels will be clipped between nodes
+- **Total horizontal span** of all nodes + gaps must not exceed 920px
+- For 4-node horizontal flow: place node centers at x = 115, 345, 575, 805 (within 920px total)
+- For 3-node horizontal flow: place node centers at x = 155, 460, 765
+- For 5+ nodes: use a **2-row grid layout** or **vertical flow** — never a single horizontal row
+- **SVG viewBox must be exactly**: `viewBox="0 0 1000 562"`
+- All content must be visible within the 1000×562 boundary — no overflow, no clipping
+
 ## Data Schema
 
 ```json
@@ -29,7 +41,7 @@ Generate a self-contained HTML diagram with connected nodes.
 ## Edge Connection Code
 
 ```javascript
-const NODE_WIDTH = 180, NODE_HEIGHT = 70, ARROW_OFFSET = 10;
+const NODE_WIDTH = 150, NODE_HEIGHT = 70, ARROW_OFFSET = 10;
 
 function getEdgePoints(from, to) {
     const dx = to.x - from.x, dy = to.y - from.y;
