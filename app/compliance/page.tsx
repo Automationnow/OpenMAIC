@@ -314,6 +314,146 @@ export default function CompliancePage() {
           </p>
         </section>
 
+        {/* NIST SP 800-171 Readiness */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">
+            NIST SP 800-171 Readiness
+          </h2>
+          <p className="text-gray-600 mb-2">
+            <strong>NIST Special Publication 800-171 Rev. 3</strong> — <em>Protecting Controlled Unclassified Information (CUI) in Nonfederal Systems and Organizations</em> — defines the security requirements federal contractors must meet when handling government-sensitive data. Automation Now, LLC is actively aligning the CALE platform with all 17 control families in preparation for future federal contract engagements.
+          </p>
+          <p className="text-gray-600 mb-6">
+            Reference:{' '}
+            <a href="https://csrc.nist.gov/pubs/sp/800/171/r3/final" target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
+              NIST SP 800-171 Rev. 3 (csrc.nist.gov) ↗
+            </a>
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="border border-indigo-200 rounded-xl p-5 bg-indigo-50">
+              <div className="text-xs text-indigo-600 font-semibold uppercase tracking-wide mb-3">17 Control Families — Current Alignment</div>
+              <ul className="space-y-1 text-sm text-gray-700">
+                {[
+                  ['Access Control', 'green'],
+                  ['Awareness and Training', 'green'],
+                  ['Audit and Accountability', 'yellow'],
+                  ['Configuration Management', 'green'],
+                  ['Identification and Authentication', 'green'],
+                  ['Incident Response', 'green'],
+                  ['Maintenance', 'yellow'],
+                  ['Media Protection', 'green'],
+                  ['Personnel Security', 'yellow'],
+                  ['Physical Protection', 'yellow'],
+                  ['Risk Assessment', 'green'],
+                  ['Security Assessment and Monitoring', 'green'],
+                  ['System and Communications Protection', 'green'],
+                  ['System and Information Integrity', 'green'],
+                  ['Planning', 'yellow'],
+                  ['System and Services Acquisition', 'yellow'],
+                  ['Supply Chain Risk Management', 'yellow'],
+                ].map(([family, status]) => (
+                  <li key={family} className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                      status === 'green' ? 'bg-green-500' : 'bg-yellow-400'
+                    }`} />
+                    <span>{family}</span>
+                    <span className={`ml-auto text-xs font-medium ${
+                      status === 'green' ? 'text-green-700' : 'text-yellow-700'
+                    }`}>{status === 'green' ? 'Implemented' : 'In Progress'}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="border border-indigo-200 rounded-xl p-5 bg-white">
+              <div className="text-xs text-indigo-600 font-semibold uppercase tracking-wide mb-3">Key Implementation Highlights</div>
+              <ul className="space-y-3 text-sm text-gray-700">
+                <li className="flex items-start gap-2">
+                  <span className="text-indigo-600 mt-0.5">▸</span>
+                  <span><strong>Zero-Retention Architecture</strong> — No CUI is stored or persisted; all learner session data is ephemeral, eliminating the primary CUI exposure vector.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-indigo-600 mt-0.5">▸</span>
+                  <span><strong>Access Control (AC)</strong> — Platform access restricted via unique, non-identifiable access codes. Role-based access enforced at the application layer.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-indigo-600 mt-0.5">▸</span>
+                  <span><strong>System &amp; Communications Protection (SC)</strong> — TLS 1.3 encryption for all data in transit. Vercel SOC 2 Type II infrastructure provides boundary protection.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-indigo-600 mt-0.5">▸</span>
+                  <span><strong>Incident Response (IR)</strong> — Formal IR Plan aligned with NIST SP 800-61 Rev. 2 with 24-hour notification and 4-hour RTO commitments.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-indigo-600 mt-0.5">▸</span>
+                  <span><strong>Risk Assessment (RA)</strong> — Annual risk assessments aligned with NIST SP 800-30. Third-party AI vendor security reviewed annually.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-indigo-600 mt-0.5">▸</span>
+                  <span><strong>System Security Plan (SSP)</strong> — SSP documentation in development; available to federal contracting officers upon request.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* CMMC 2.0 Readiness */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">
+            CMMC 2.0 Readiness
+          </h2>
+          <p className="text-gray-600 mb-2">
+            The <strong>Cybersecurity Maturity Model Certification (CMMC) 2.0</strong> became enforceable law on <strong>November 10, 2025</strong> (48 CFR Final Rule, Federal Register). All new Department of Defense (DoD) solicitations and contracts now include CMMC requirements as a condition of award. Automation Now, LLC is actively pursuing <strong>CMMC Level 1</strong> self-attestation and monitoring the pathway to <strong>Level 2</strong> certification for future DoD and federal education contracts.
+          </p>
+          <p className="text-gray-600 mb-6">
+            Reference:{' '}
+            <a href="https://dodcio.defense.gov/CMMC/" target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
+              DoD CMMC Program (dodcio.defense.gov) ↗
+            </a>
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="border-2 border-green-300 rounded-xl p-5 bg-green-50">
+              <div className="text-xs text-green-700 font-semibold uppercase tracking-wide mb-2">Level 1 — Foundational</div>
+              <div className="text-lg font-bold text-gray-900 mb-2">Self-Attestation</div>
+              <p className="text-sm text-gray-600 mb-3">17 basic cybersecurity practices protecting Federal Contract Information (FCI). Annual self-assessment required.</p>
+              <div className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">In Progress — 2025</div>
+            </div>
+            <div className="border-2 border-yellow-300 rounded-xl p-5 bg-yellow-50">
+              <div className="text-xs text-yellow-700 font-semibold uppercase tracking-wide mb-2">Level 2 — Advanced</div>
+              <div className="text-lg font-bold text-gray-900 mb-2">Third-Party Assessment</div>
+              <p className="text-sm text-gray-600 mb-3">110 controls across all NIST SP 800-171 families. Triennial C3PAO assessment required for contracts involving CUI.</p>
+              <div className="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full">Roadmap — 2026</div>
+            </div>
+            <div className="border-2 border-gray-200 rounded-xl p-5 bg-gray-50">
+              <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-2">Level 3 — Expert</div>
+              <div className="text-lg font-bold text-gray-900 mb-2">Government-Led Assessment</div>
+              <p className="text-sm text-gray-600 mb-3">Enhanced practices beyond NIST SP 800-171 for programs with critical national security information. DCSA-led assessment.</p>
+              <div className="inline-block bg-gray-100 text-gray-600 text-xs font-semibold px-3 py-1 rounded-full">Future Consideration</div>
+            </div>
+          </div>
+          <div className="border border-blue-200 rounded-xl p-5 bg-blue-50">
+            <div className="text-xs text-blue-700 font-semibold uppercase tracking-wide mb-3">CMMC Readiness Actions Underway</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2"><span className="text-green-600 font-bold mt-0.5">✓</span><span>Zero-retention architecture eliminates primary CUI storage risk</span></li>
+                <li className="flex items-start gap-2"><span className="text-green-600 font-bold mt-0.5">✓</span><span>TLS 1.3 encryption and SOC 2 Type II hosting infrastructure in place</span></li>
+                <li className="flex items-start gap-2"><span className="text-green-600 font-bold mt-0.5">✓</span><span>Incident Response Plan (NIST SP 800-61 Rev. 2) documented</span></li>
+                <li className="flex items-start gap-2"><span className="text-green-600 font-bold mt-0.5">✓</span><span>GitHub Secret Scanning and Dependabot alerts enabled on all repositories</span></li>
+              </ul>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2"><span className="text-yellow-500 font-bold mt-0.5">◎</span><span>System Security Plan (SSP) documentation in development</span></li>
+                <li className="flex items-start gap-2"><span className="text-yellow-500 font-bold mt-0.5">◎</span><span>Plan of Action &amp; Milestones (POA&amp;M) being formalized</span></li>
+                <li className="flex items-start gap-2"><span className="text-yellow-500 font-bold mt-0.5">◎</span><span>CMMC Level 1 self-attestation submission in progress</span></li>
+                <li className="flex items-start gap-2"><span className="text-yellow-500 font-bold mt-0.5">◎</span><span>Registered Practitioner Organization (RPO) engagement planned for Level 2 gap assessment</span></li>
+              </ul>
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 mt-4">
+            Source: 48 CFR CMMC Final Rule, Federal Register (September 10, 2025, effective November 10, 2025).{' '}
+            <a href="https://dodcio.defense.gov/CMMC/" target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
+              dodcio.defense.gov/CMMC ↗
+            </a>
+          </p>
+        </section>
+
         {/* About the Platform */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">
